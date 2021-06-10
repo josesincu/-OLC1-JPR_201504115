@@ -6,7 +6,7 @@ VACACIONES DE JUNIO 2020
 -------------------------------
 '''
 from TS.Excepcion import Excepcion
-
+#______________________________________ LEXICO ___________________________
 errores = []
 reservadas = {
     'int'   : 'Rint',
@@ -14,7 +14,8 @@ reservadas = {
     'boolean':'Rboolean',
     'char' :'Rchar',
     'string': 'Rstring',
-    'null' : 'Rnull',
+    'var':'Rvar',
+    'if':'Rif',
     'print' : 'Rprint',
 }
 
@@ -26,13 +27,15 @@ tokens  = [
     'MENOS',
     'POR',
     'DIV',
-    'POTENCIA',
-    'MODULO',
+    'POT',
+    'MOD',
     'DECIMAL',
     'ENTERO',
     'CADENA',
-    'BOLEANO',
-    'CARACTER'
+    'TRUE',
+    'FALSE',
+    'NULL',
+    'CARACTER',
     'ID'
 ] + list(reservadas.values())
 
@@ -46,8 +49,6 @@ t_POR           = r'\*'
 t_DIV           = r'/'
 t_POTENCIA      = r'\^'
 t_MODULO        = r'%'
-
-
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
@@ -67,6 +68,24 @@ def t_ENTERO(t):
         t.value = 0
     return t
 
+def t_TRUE(t):
+    r'true'
+    try:
+        t.value = True
+    except ValueError:
+        print('Error no se puede convertir a booleano esto %d',t.value)
+        t.value = None
+    return t
+
+def t_FALSE(t):
+    r'false'
+    try:
+        t.value = False
+    except ValueError:
+        print('Error no se puede convertir a booleano esto %d',t.value)
+        t.value = None
+    return t
+
 def t_ID(t):
      r'[a-zA-Z][a-zA-Z_0-9]*'
      t.type = reservadas.get(t.value.lower(),'ID')
@@ -77,6 +96,10 @@ def t_CADENA(t):
     t.value = t.value[1:-1] # remuevo las comillas
     return t
 
+def t_CARACTER(t):
+    r'\'.\''
+    t.value = t.value[1:-1] # remuevo las comillas simples
+    return t
 # Comentario simple // ...
 def t_COMENTARIO_SIMPLE(t):
     r'\#.*\n'
@@ -102,7 +125,9 @@ def find_column(inp, token):
 
 # Construyendo el analizador léxico
 import ply.lex as lex
-lexer = lex.lex()
+import re
+#lex.lex(reflags=re.IGNORECASE) 
+lexer = lex.lex(reflags=re.IGNORECASE)
 
 
 
@@ -125,7 +150,7 @@ def p_instrucciones_instrucciones_instruccion(t) :
         t[1].append(t[2])
     t[0] = t[1]
     
-#///////////////////////////////////////INSTRUCCIONES//////////////////////////////////////////////////
+#_______________________________________ INSTRUCCIONES _________________________________
 
 def p_instrucciones_instruccion(t) :
     'instrucciones    : instruccion'
@@ -134,7 +159,7 @@ def p_instrucciones_instruccion(t) :
     else:    
         t[0] = [t[1]]
 
-#///////////////////////////////////////INSTRUCCION//////////////////////////////////////////////////
+#_______________________________________ INSTRUCCION ___________________________________
 
 def p_instruccion(t) :
     '''instruccion      : imprimir_instr'''
@@ -144,18 +169,19 @@ def p_instruccion_error(t):
     'instruccion        : error PUNTOCOMA'
     errores.append(Excepcion("Sintáctico","Error Sintáctico." + str(t[1].value) , t.lineno(1), find_column(input, t.slice[1])))
     t[0] = ""
-#///////////////////////////////////////IMPRIMIR//////////////////////////////////////////////////
+#_______________________________________ IMPRIMIR ______________________________________
 
 def p_imprimir(t) :
     'imprimir_instr     : Rprint PARA expresion PARC PUNTOCOMA' 
     t[0] = Imprimir(t[3], t.lineno(1), find_column(input, t.slice[1]))
 
-#///////////////////////////////////////EXPRESION//////////////////////////////////////////////////
+#_______________________________________ EXPRESION ____________________________________
 
 def p_expresion_binaria(t):
     '''
     expresion : expresion MAS expresion
             | expresion MENOS expresion
+            | expresion POR
     '''
     if t[2] == '+':
         t[0] = Aritmetica(OperadorAritmetico.MAS, t[1],t[3], t.lineno(2), find_column(input, t.slice[2]))
@@ -174,6 +200,19 @@ def p_primitivo_decimal(t):
 def p_primitivo_cadena(t):
     '''expresion : CADENA'''
     t[0] = Primitivos(TIPO.CADENA,str(t[1]).replace('\\n', '\n'), t.lineno(1), find_column(input, t.slice[1]))
+
+def p_primitivo_true(t):
+    '''expresion : TRUE'''
+    t[0] = Primitivos(TIPO.BOOLEANO,t[1],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_primitivo_false(t):
+    '''expresion : FALSE'''
+    t[0] = Primitivos(TIPO.BOOLEANO,t[1],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_primitivo_caracter(t):
+    '''expresion : CARACTER'''
+    t[0] = Primitivos(TIPO.CHARACTER,t[1],t.lineno(1), find_column(input, t.slice[1]))
+
 
 import ply.yacc as yacc
 parser = yacc.yacc()
