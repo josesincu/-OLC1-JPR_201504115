@@ -5,6 +5,7 @@ Jose Castro Sincu
 VACACIONES DE JUNIO 2020
 -------------------------------
 '''
+import re
 from TS.Excepcion import Excepcion
 #______________________________________ LEXICO ___________________________
 errores = []
@@ -16,13 +17,18 @@ reservadas = {
     'string': 'Rstring',
     'var':'Rvar',
     'if':'Rif',
+    'else':'Relse',
     'print' : 'Rprint',
+    'break' : 'Rbreak',
+    'while' : 'Rwhile'
 }
 
 tokens  = [
     'PUNTOCOMA',
     'PARA',
     'PARC',
+    'LLAVEA',
+    'LLAVEC',
     'MAS',
     'MENOS',
     'POR',
@@ -53,6 +59,8 @@ tokens  = [
 t_PUNTOCOMA     = r';'
 t_PARA          = r'\('
 t_PARC          = r'\)'
+t_LLAVEA        = r'{'
+t_LLAVEC        = r'}'
 t_MAS           = r'\+'
 t_MENOS         = r'-'
 t_POR           = r'\*'
@@ -145,9 +153,8 @@ def find_column(inp, token):
 
 # Construyendo el analizador léxico
 import ply.lex as lex
-import re
-#lex.lex(reflags=re.IGNORECASE) 
-lexer = lex.lex()
+
+lexer = lex.lex(reflags=re.IGNORECASE)
 
 
 #______________________ Asociación de operadores y precedencia ____________________________
@@ -167,12 +174,24 @@ precedence = (
 
 #Abstract
 from Abstract.Instruccion import Instruccion
+#_______________________________ TIPOS DE INSTRUCCION ___________________________
 from Instrucciones.Imprimir import Imprimir
-from Expresiones.Primitivos import Primitivos
+from Instrucciones.Declaracion import Declaracion
+from Instrucciones.Asignacion import Asignacion
+from Instrucciones.If import If
+from Instrucciones.Break import Break
+from Instrucciones.While import While
+
+
+#________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
 from TS.Tipo import OperadorAritmetico, TIPO,OperadorRelacional,OperadorLogico
+
+#________________________________ TIPOS DE EXPRESIONES ____________________________
+from Expresiones.Primitivos import Primitivos
 from Expresiones.Aritmetica import Aritmetica
 from Expresiones.Relacional import Relacional
 from Expresiones.Logica import Logica
+from Expresiones.Identificador import Identificador
 
 def p_init(t) :
     'init            : instrucciones'
@@ -197,7 +216,11 @@ def p_instrucciones_instruccion(t) :
 
 def p_instruccion(t) :
     '''instruccion      : imprimir_instr
-                        | declaracion'''
+                        | declaracion
+                        | asignacion
+                        | if
+                        | break 
+                        | while '''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -212,17 +235,17 @@ def p_imprimir(t) :
 
 #_______________________________________ DECLARACION __________________________________
 def p_declaracion(t):
-    ''' declaracion : tipo ID fin_instr
-                    | tipo ID IGUAL expresion fin_instr'''
-    t[0] = None
+    'declaracion     : tipo ID IGUAL expresion fin_instr'
+    t[0] = Declaracion(t[1], t[2], t.lineno(2), find_column(input, t.slice[2]), t[4])
 
 def p_tipo(t):
-    '''tipo     : Rint
-                | Rdouble
-                | Rstring
-                | Rboolean
-                | Rchar 
-                | Rvar'''
+    '''tipo : Rint
+            | Rdouble
+            | Rstring
+            | Rboolean
+            | Rchar 
+            | Rvar '''
+
     if t[1] == 'int':
         t[0] = TIPO.ENTERO
     elif t[1] == 'double':
@@ -235,6 +258,32 @@ def p_tipo(t):
         t[0] = TIPO.CHARACTER
     elif t[1] == 'var':
         t[0] = TIPO.VAR
+#_______________________________________ ASIGNACION __________________________________
+def p_asignacion(t):
+    ''' asignacion : ID IGUAL  expresion fin_instr'''
+    t[0] =  Asignacion(t[1],t[3],t.lineno(1), find_column(input, t.slice[1]))
+#_______________________________________ IF _________________________________________
+def p_if(t) :
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC'
+    t[0] = If(t[3], t[6], None, None, t.lineno(1), find_column(input, t.slice[1]))
+
+def p_if_else(t) :
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC Relse LLAVEA instrucciones LLAVEC'
+    t[0] = If(t[3], t[6], t[10], None, t.lineno(1), find_column(input, t.slice[1]))
+
+def p_if_elseIf_else(t) :
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC Relse if'
+    t[0] = If(t[3], t[6], None, t[9], t.lineno(1), find_column(input, t.slice[1]))
+
+#______________________________________ BREAK ________________________________________
+def p_break(t):
+    'break : Rbreak fin_instr'
+    t[0] = Break(t.lineno(1), find_column(input, t.slice[1]))
+
+#______________________________________ WHILE _______________________________________
+def p_while(t):
+    ''' while : Rwhile PARA expresion PARC LLAVEA instrucciones LLAVEC '''
+    t[0] = While(t[3],t[6],t.lineno(1), find_column(input, t.slice[1]))
 
 #_______________________________________ PUNTO COMA __________________________________
 def p_puntocoma(t):
@@ -298,6 +347,9 @@ def p_expresion_unaria(t):
     elif t[1] == '!':
         t[0] = Logica(OperadorLogico.NOT, t[2],None, t.lineno(1), find_column(input, t.slice[1]))
 
+def p_expresion_parentesis(t):
+    ''' expresion : PARA expresion PARC '''
+    t[0] = t[2]
 
 def p_expresion_entero(t):
     '''expresion : ENTERO'''
@@ -322,6 +374,9 @@ def p_primitivo_false(t):
 def p_primitivo_caracter(t):
     '''expresion : CARACTER'''
     t[0] = Primitivos(TIPO.CHARACTER,t[1],t.lineno(1), find_column(input, t.slice[1]))
+def p_identificador(t):
+    '''expresion : ID '''
+    t[0] = Identificador(t[1], t.lineno(1), find_column(input, t.slice[1]))
 
 
 import ply.yacc as yacc
