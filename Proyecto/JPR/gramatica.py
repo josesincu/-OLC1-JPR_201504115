@@ -29,12 +29,22 @@ tokens  = [
     'DIV',
     'POT',
     'MOD',
+    'MENORIGUAL',
+    'MENOR',
+    'MAYORIGUAL',
+    'MAYOR',
+    'IGUALIGUAL',
+    'DISTINTO',
+    'AND',
+    'OR',
+    'NOT',
     'DECIMAL',
     'ENTERO',
     'CADENA',
     'TRUE',
     'FALSE',
     'NULL',
+    'IGUAL',
     'CARACTER',
     'ID'
 ] + list(reservadas.values())
@@ -47,8 +57,18 @@ t_MAS           = r'\+'
 t_MENOS         = r'-'
 t_POR           = r'\*'
 t_DIV           = r'/'
-t_POTENCIA      = r'\^'
-t_MODULO        = r'%'
+t_POT           = r'\*\*'
+t_MOD           = r'%'
+t_MENOR         = r'<'
+t_MENORIGUAL    = r'<='
+t_MAYOR         = r'>'
+t_MAYORIGUAL    = r'>='
+t_IGUALIGUAL    = r'=='
+t_DISTINTO      = r'=!'
+t_AND           = r'&&'
+t_OR            = r'\|\|'
+t_NOT           = r'!'
+t_IGUAL         = r'='
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
@@ -127,7 +147,19 @@ def find_column(inp, token):
 import ply.lex as lex
 import re
 #lex.lex(reflags=re.IGNORECASE) 
-lexer = lex.lex(reflags=re.IGNORECASE)
+lexer = lex.lex()
+
+
+#______________________ Asociación de operadores y precedencia ____________________________
+precedence = (
+    ('left','OR'),
+    ('left','AND'),
+    ('right','UNOT'),
+    ('left','IGUALIGUAL','DISTINTO', 'MENOR','MENORIGUAL','MAYOR','MAYORIGUAL'),
+    ('left','MAS','MENOS'),
+    ('left','DIV','POR','MOD'),
+    ('right','UMENOS'),
+    )
 
 
 
@@ -137,8 +169,10 @@ lexer = lex.lex(reflags=re.IGNORECASE)
 from Abstract.Instruccion import Instruccion
 from Instrucciones.Imprimir import Imprimir
 from Expresiones.Primitivos import Primitivos
-from TS.Tipo import OperadorAritmetico, TIPO
+from TS.Tipo import OperadorAritmetico, TIPO,OperadorRelacional,OperadorLogico
 from Expresiones.Aritmetica import Aritmetica
+from Expresiones.Relacional import Relacional
+from Expresiones.Logica import Logica
 
 def p_init(t) :
     'init            : instrucciones'
@@ -162,7 +196,8 @@ def p_instrucciones_instruccion(t) :
 #_______________________________________ INSTRUCCION ___________________________________
 
 def p_instruccion(t) :
-    '''instruccion      : imprimir_instr'''
+    '''instruccion      : imprimir_instr
+                        | declaracion'''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -172,8 +207,40 @@ def p_instruccion_error(t):
 #_______________________________________ IMPRIMIR ______________________________________
 
 def p_imprimir(t) :
-    'imprimir_instr     : Rprint PARA expresion PARC PUNTOCOMA' 
+    'imprimir_instr : Rprint PARA expresion PARC fin_instr'
     t[0] = Imprimir(t[3], t.lineno(1), find_column(input, t.slice[1]))
+
+#_______________________________________ DECLARACION __________________________________
+def p_declaracion(t):
+    ''' declaracion : tipo ID fin_instr
+                    | tipo ID IGUAL expresion fin_instr'''
+    t[0] = None
+
+def p_tipo(t):
+    '''tipo     : Rint
+                | Rdouble
+                | Rstring
+                | Rboolean
+                | Rchar 
+                | Rvar'''
+    if t[1] == 'int':
+        t[0] = TIPO.ENTERO
+    elif t[1] == 'double':
+        t[0] = TIPO.DECIMAL
+    elif t[1] == 'string':
+        t[0] = TIPO.CADENA
+    elif t[1] == 'boolean':
+        t[0] = TIPO.BOOLEANO
+    elif t[1] == 'char':
+        t[0] = TIPO.CHARACTER
+    elif t[1] == 'var':
+        t[0] = TIPO.VAR
+
+#_______________________________________ PUNTO COMA __________________________________
+def p_puntocoma(t):
+    ''' fin_instr : PUNTOCOMA
+                    | '''
+    t[0]=None
 
 #_______________________________________ EXPRESION ____________________________________
 
@@ -181,12 +248,55 @@ def p_expresion_binaria(t):
     '''
     expresion : expresion MAS expresion
             | expresion MENOS expresion
-            | expresion POR
+            | expresion POR expresion
+            | expresion POT expresion
+            | expresion MOD expresion
+            | expresion MENORIGUAL expresion
+            | expresion MENOR expresion
+            | expresion MAYORIGUAL expresion
+            | expresion MAYOR expresion
+            | expresion IGUALIGUAL expresion
+            | expresion DISTINTO expresion
+            | expresion AND expresion
+            | expresion OR expresion
     '''
     if t[2] == '+':
         t[0] = Aritmetica(OperadorAritmetico.MAS, t[1],t[3], t.lineno(2), find_column(input, t.slice[2]))
     elif t[2] == '-':
         t[0] = Aritmetica(OperadorAritmetico.MENOS, t[1],t[3], t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '*':
+        t[0] = Aritmetica(OperadorAritmetico.POR,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '**':
+        t[0] = Aritmetica(OperadorAritmetico.POT,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '%':
+        t[0] = Aritmetica(OperadorAritmetico.MOD,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '<':
+        t[0] = Relacional(OperadorRelacional.MENOR,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '<=':
+        t[0] = Relacional(OperadorRelacional.MENORIGUAL,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '>':
+        t[0] = Relacional(OperadorRelacional.MAYOR,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '>=':
+        t[0] = Relacional(OperadorRelacional.MAYORIGUAL,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '==':
+        t[0] = Relacional(OperadorRelacional.IGUALIGUAL,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '=!':
+        t[0] = Relacional(OperadorRelacional.DISTINTO,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '&&':
+        t[0] = Logica(OperadorLogico.AND,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '||':
+        t[0] = Logica(OperadorLogico.OR,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    
+  
+def p_expresion_unaria(t):
+    '''
+    expresion : MENOS expresion %prec UMENOS 
+            | NOT expresion %prec UNOT 
+    '''
+    if t[1] == '-':
+        t[0] = Aritmetica(OperadorAritmetico.UMENOS, t[2],None, t.lineno(1), find_column(input, t.slice[1]))
+    elif t[1] == '!':
+        t[0] = Logica(OperadorLogico.NOT, t[2],None, t.lineno(1), find_column(input, t.slice[1]))
 
 
 def p_expresion_entero(t):

@@ -8,6 +8,7 @@ class TIPO(Enum):
     CADENA = 5
     NULO = 6
     ARREGLO = 7
+    VAR = 8
 
 class OperadorAritmetico(Enum):
     MAS = 1
@@ -21,10 +22,10 @@ class OperadorAritmetico(Enum):
 class OperadorRelacional(Enum):
     MENOR = 1
     MAYOR = 2
-    MENORQUE = 3
-    MAYORQUE = 4
+    MENORIGUAL = 3
+    MAYORIGUAL = 4
     IGUALIGUAL = 5
-    DIFERENTE = 6
+    DISTINTO = 6
 
 class OperadorLogico(Enum):
     NOT = 1

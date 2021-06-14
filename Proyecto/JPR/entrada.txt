@@ -1,4 +1,1 @@
-print(true-12.5);
-print("Hola caracter"+ '@');
-print(12.50+true+5);
-print(5 + 3+234+324+34+3);
+print(6>=1 && 1<5);
