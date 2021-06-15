@@ -1,5 +1,0 @@
-int num = 0;
-while(num < 10){
-    print("Iteracion -> " + (num + 1))
-    num = num + 1;
-}

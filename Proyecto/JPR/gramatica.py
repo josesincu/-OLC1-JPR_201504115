@@ -52,7 +52,9 @@ tokens  = [
     'NULL',
     'IGUAL',
     'CARACTER',
-    'ID'
+    'ID',
+    'MASMAS',
+    'MENOSMENOS'
 ] + list(reservadas.values())
 
 # Tokens
@@ -77,6 +79,8 @@ t_AND           = r'&&'
 t_OR            = r'\|\|'
 t_NOT           = r'!'
 t_IGUAL         = r'='
+t_MASMAS        = r'\+\+'
+t_MENOSMENOS    = r'--'
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
@@ -172,7 +176,7 @@ precedence = (
 
 # Definición de la gramática
 
-#Abstract
+#_______________________________  Abstract ______________________________________
 from Abstract.Instruccion import Instruccion
 #_______________________________ TIPOS DE INSTRUCCION ___________________________
 from Instrucciones.Imprimir import Imprimir
@@ -181,10 +185,11 @@ from Instrucciones.Asignacion import Asignacion
 from Instrucciones.If import If
 from Instrucciones.Break import Break
 from Instrucciones.While import While
+from Instrucciones.Incremento import Incremento
 
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
-from TS.Tipo import OperadorAritmetico, TIPO,OperadorRelacional,OperadorLogico
+from TS.Tipo import OperadorAritmetico, TIPO,OperadorRelacional,OperadorLogico,OperadorIncremento
 
 #________________________________ TIPOS DE EXPRESIONES ____________________________
 from Expresiones.Primitivos import Primitivos
@@ -220,7 +225,8 @@ def p_instruccion(t) :
                         | asignacion
                         | if
                         | break 
-                        | while '''
+                        | while
+                        | tipo_incremento '''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -284,6 +290,15 @@ def p_break(t):
 def p_while(t):
     ''' while : Rwhile PARA expresion PARC LLAVEA instrucciones LLAVEC '''
     t[0] = While(t[3],t[6],t.lineno(1), find_column(input, t.slice[1]))
+
+#______________________________________ TIPO INCREMENTO _____________________________
+def p_incrementos(t):
+    ''' tipo_incremento : ID MASMAS fin_instr
+                        | ID MENOSMENOS fin_instr '''
+    if t[2]=='++':
+        t[0] = Incremento(t[1],OperadorIncremento.MASMAS,t.lineno(1), find_column(input, t.slice[1]))
+    elif t[2]=='--':
+        t[0] = Incremento(t[1],OperadorIncremento.MENOSMENOS,t.lineno(1), find_column(input, t.slice[1]))
 
 #_______________________________________ PUNTO COMA __________________________________
 def p_puntocoma(t):

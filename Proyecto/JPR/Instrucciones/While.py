@@ -13,18 +13,14 @@ class While(Instruccion):
 
     def interpretar(self, tree, table):
         while True:
-            
             condicion = self.condicion.interpretar(tree, table)
             if isinstance(condicion, Excepcion): return condicion
 
             if self.condicion.tipo == TIPO.BOOLEANO:
-                
                 if bool(condicion) == True:   # VERIFICA SI ES VERDADERA LA CONDICION
-                    
                     nuevaTabla = TablaSimbolos(table)       #NUEVO ENTORNO
                     for instruccion in self.instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
-                        print(result)
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
                             tree.updateConsola(result.toString())

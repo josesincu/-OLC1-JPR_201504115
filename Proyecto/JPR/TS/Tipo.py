@@ -31,3 +31,6 @@ class OperadorLogico(Enum):
     NOT = 1
     AND = 2
     OR = 3
+class OperadorIncremento(Enum):
+    MASMAS = 1
+    MENOSMENOS = 2
