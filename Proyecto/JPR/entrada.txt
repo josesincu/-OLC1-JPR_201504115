@@ -1,0 +1,16 @@
+
+switch(2){
+    case 1:
+        print("Hola caso 1")
+        break
+    
+    case 2:
+        print("Hola caso 2")
+    
+    case 5:
+        print("Hola caso 5")
+    default:
+        print("Hola dafault");
+
+
+}

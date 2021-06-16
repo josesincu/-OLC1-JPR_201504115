@@ -20,7 +20,11 @@ reservadas = {
     'else':'Relse',
     'print' : 'Rprint',
     'break' : 'Rbreak',
-    'while' : 'Rwhile'
+    'while' : 'Rwhile',
+    'for'   : 'Rfor',
+    'switch' : 'Rswitch',
+    'case' : 'Rcase',
+    'default' : 'Rdefault'
 }
 
 tokens  = [
@@ -54,7 +58,8 @@ tokens  = [
     'CARACTER',
     'ID',
     'MASMAS',
-    'MENOSMENOS'
+    'MENOSMENOS',
+    'DOSPUNTO'
 ] + list(reservadas.values())
 
 # Tokens
@@ -81,6 +86,7 @@ t_NOT           = r'!'
 t_IGUAL         = r'='
 t_MASMAS        = r'\+\+'
 t_MENOSMENOS    = r'--'
+t_DOSPUNTO     = r':'
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
@@ -186,6 +192,9 @@ from Instrucciones.If import If
 from Instrucciones.Break import Break
 from Instrucciones.While import While
 from Instrucciones.Incremento import Incremento
+from Instrucciones.For import For
+from Instrucciones.Switch import Switch
+from Instrucciones.Caso import Caso
 
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
@@ -226,7 +235,9 @@ def p_instruccion(t) :
                         | if
                         | break 
                         | while
-                        | tipo_incremento '''
+                        | tipo_incremento 
+                        | for
+                        | switch '''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -299,6 +310,52 @@ def p_incrementos(t):
         t[0] = Incremento(t[1],OperadorIncremento.MASMAS,t.lineno(1), find_column(input, t.slice[1]))
     elif t[2]=='--':
         t[0] = Incremento(t[1],OperadorIncremento.MENOSMENOS,t.lineno(1), find_column(input, t.slice[1]))
+#_______________________________________    FOR _____________________________________
+def p_for(t):
+    ''' for : Rfor PARA declar_asig expresion PUNTOCOMA actualizacion PARC LLAVEA instrucciones LLAVEC'''
+    t[0] = For(t[3],t[4],t[6],t[9],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_declaracion_asig(t):
+    ''' declar_asig : declaracion
+                    | asignacion '''
+    t[0] = t[1]
+def p_actualizacion_asig(t):
+    '''actualizacion : asignacion
+                    |  tipo_incremento'''
+    t[0] = t[1]
+#______________________________________ SWITCH ______________________________________
+def p_switch_casos(t):
+    ''' switch : Rswitch PARA expresion PARC LLAVEA listaCaso LLAVEC '''
+    t[0] = Switch(t[3],t[6],None,t.lineno(1), find_column(input, t.slice[1]))
+
+def p_switch_casos_defult(t):
+    ''' switch : Rswitch PARA expresion PARC LLAVEA listaCaso Rdefault DOSPUNTO instrucciones LLAVEC '''
+    t[0] = Switch(t[3],t[6],t[9],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_switch_default(t):
+    ''' switch : Rswitch PARA expresion PARC LLAVEA Rdefault DOSPUNTO instrucciones LLAVEC '''
+    t[0] = Switch(t[3],None,t[8],t.lineno(1), find_column(input, t.slice[1]))
+    
+
+def p_listaCaso(t):
+    ''' listaCaso : listaCaso casos'''
+    if t[2] != "":
+        t[1].append(t[2])
+    t[0] = t[1]
+
+def p_casos(t):
+    ''' listaCaso : casos '''
+    if t[1] == "":
+        t[0] = []
+    else:    
+        t[0] = [t[1]]
+
+
+def p_caso(t):
+    '''casos : Rcase expresion DOSPUNTO instrucciones'''
+    t[0] = Caso(t[2],t[4],t.lineno(1), find_column(input, t.slice[1]))
+
+
 
 #_______________________________________ PUNTO COMA __________________________________
 def p_puntocoma(t):
