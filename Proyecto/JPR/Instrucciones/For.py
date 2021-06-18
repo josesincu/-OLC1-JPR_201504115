@@ -3,6 +3,7 @@ from TS.Excepcion import Excepcion
 from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
 from Instrucciones.Break import Break
+from Instrucciones.Continue import Continue
 
 class For(Instruccion):
     def __init__(self,declaracion,condicion,incremento,instrucciones,fila,columna):
@@ -14,25 +15,62 @@ class For(Instruccion):
         self.columna = columna
 
     def interpretar(self, tree, table):
-        self.declaracion.interpretar(tree,table)
-        
+        #self.declaracion.interpretar(tree,table) #NUEVO ENTORNO
+        nuevaTabla = TablaSimbolos(table)
         while True:
-            estado = self.condicion.interpretar(tree,table)
+            
+            self.declaracion.interpretar(tree,nuevaTabla)
+            estado = self.condicion.interpretar(tree,nuevaTabla)
             if isinstance(estado, Excepcion):
                 return estado
             if self.condicion.tipo == TIPO.BOOLEANO:
+               
                 if estado == True:
-                    nuevaTabla = TablaSimbolos(table)       #NUEVO ENTORNO
+                    nuevaTabl = TablaSimbolos(nuevaTabla)       #NUEVO ENTORNO
                     for instruccion in self.instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+
+                        result = instruccion.interpretar(tree, nuevaTabl) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
                             tree.updateConsola(result.toString())
-                        if isinstance(result, Break): return None
-                    self.incremento.interpretar(tree,table)
+                        if isinstance(result, Break): 
+                            return None
+                        if isinstance(result, Continue):
+                            break
+                    self.incremento.interpretar(tree,nuevaTabl)
                 else:
                     break
             else:
                 return Excepcion("Semantico", "Tipo de dato no booleano en FOR.", self.fila, self.columna)
             
 
+
+'''
+nuevaTabla = TablaSimbolos(table)
+        while True:
+            
+            self.declaracion.interpretar(tree,nuevaTabla)
+            estado = self.condicion.interpretar(tree,nuevaTabla)
+            if isinstance(estado, Excepcion):
+                return estado
+            if self.condicion.tipo == TIPO.BOOLEANO:
+               
+                if estado == True:
+                    nuevaTabl = TablaSimbolos(table)       #NUEVO ENTORNO
+                    for instruccion in self.instrucciones:
+
+                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        if isinstance(result, Excepcion) :
+                            tree.getExcepciones().append(result)
+                            tree.updateConsola(result.toString())
+                        if isinstance(result, Break): 
+                            return None
+                        if isinstance(result, Continue):
+                            break
+                    self.incremento.interpretar(tree,nuevaTabla)
+                else:
+                    break
+            else:
+                return Excepcion("Semantico", "Tipo de dato no booleano en FOR.", self.fila, self.columna)
+            
+'''

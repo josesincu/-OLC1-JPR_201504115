@@ -1,16 +1,28 @@
-
-switch(2){
-    case 1:
-        print("Hola caso 1")
-        break
-    
-    case 2:
-        print("Hola caso 2")
-    
-    case 5:
-        print("Hola caso 5")
-    default:
-        print("Hola dafault");
-
-
+var edad = 18;
+switch( edad ) {
+ Case 10:
+ Print("Tengo 10 anios.");
+ # mas sentencias
+ Break;
+ Case 18:
+ Print("Tengo 18 anios.");
+ # mas sentencias
+ Case "25":
+ Print("Tengo 25 anios en String.");
+ # mas sentencias
+ Break;
+ Case 18:
+ Print("Tengo 18 anios. x2");
+ Case 18:
+ Print("Tengo 18 anios. x3");
+ Default:
+ Print("No se que edad tengo. :(");
+ # mas sentencias
+ Break;
 }
+#* Salida esperada
+Tengo 18 anios.
+Tengo 18 anios. x2
+Tengo 18 anios. x3
+No se que edad tengo. :(
+*#

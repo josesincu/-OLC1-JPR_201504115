@@ -24,7 +24,9 @@ reservadas = {
     'for'   : 'Rfor',
     'switch' : 'Rswitch',
     'case' : 'Rcase',
-    'default' : 'Rdefault'
+    'default' : 'Rdefault',
+    'continue' : 'Rcontinue',
+    'null' : 'Rnull'
 }
 
 tokens  = [
@@ -53,7 +55,6 @@ tokens  = [
     'CADENA',
     'TRUE',
     'FALSE',
-    'NULL',
     'IGUAL',
     'CARACTER',
     'ID',
@@ -138,10 +139,18 @@ def t_CARACTER(t):
     r'\'.\''
     t.value = t.value[1:-1] # remuevo las comillas simples
     return t
+
+#COMENTARIO MULTIPLE
+def t_COMENTARIO_MULTIPLE(t):
+    r'\#\*(.|\n)*?\*\#'
+    t.lineno += t.value.count('\n')
+    
 # Comentario simple // ...
 def t_COMENTARIO_SIMPLE(t):
     r'\#.*\n'
     t.lexer.lineno += 1
+
+
 
 # Caracteres ignorados
 t_ignore = " \t"
@@ -164,7 +173,7 @@ def find_column(inp, token):
 # Construyendo el analizador léxico
 import ply.lex as lex
 
-lexer = lex.lex(reflags=re.IGNORECASE)
+lexer = lex.lex(reflags = re.IGNORECASE)
 
 
 #______________________ Asociación de operadores y precedencia ____________________________
@@ -175,6 +184,7 @@ precedence = (
     ('left','IGUALIGUAL','DISTINTO', 'MENOR','MENORIGUAL','MAYOR','MAYORIGUAL'),
     ('left','MAS','MENOS'),
     ('left','DIV','POR','MOD'),
+    ('nonassoc','POT'),
     ('right','UMENOS'),
     )
 
@@ -187,6 +197,7 @@ from Abstract.Instruccion import Instruccion
 #_______________________________ TIPOS DE INSTRUCCION ___________________________
 from Instrucciones.Imprimir import Imprimir
 from Instrucciones.Declaracion import Declaracion
+from Instrucciones.Declaracion_sinAsignacion import Declaracion_sinAsignacion
 from Instrucciones.Asignacion import Asignacion
 from Instrucciones.If import If
 from Instrucciones.Break import Break
@@ -195,6 +206,7 @@ from Instrucciones.Incremento import Incremento
 from Instrucciones.For import For
 from Instrucciones.Switch import Switch
 from Instrucciones.Caso import Caso
+from Instrucciones.Continue import Continue
 
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
@@ -231,13 +243,15 @@ def p_instrucciones_instruccion(t) :
 def p_instruccion(t) :
     '''instruccion      : imprimir_instr
                         | declaracion
+                        | declaracion_sinAsig
                         | asignacion
                         | if
                         | break 
                         | while
                         | tipo_incremento 
                         | for
-                        | switch '''
+                        | switch 
+                        | continue'''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -263,19 +277,25 @@ def p_tipo(t):
             | Rchar 
             | Rvar '''
 
-    if t[1] == 'int':
+    if t[1].lower() == 'int':
         t[0] = TIPO.ENTERO
-    elif t[1] == 'double':
+    elif t[1].lower() == 'double':
         t[0] = TIPO.DECIMAL
-    elif t[1] == 'string':
+    elif t[1].lower() == 'string':
         t[0] = TIPO.CADENA
-    elif t[1] == 'boolean':
+    elif t[1].lower() == 'boolean':
         t[0] = TIPO.BOOLEANO
-    elif t[1] == 'char':
+    elif t[1].lower() == 'char':
         t[0] = TIPO.CHARACTER
-    elif t[1] == 'var':
+    elif t[1].lower() == 'var':
         t[0] = TIPO.VAR
-#_______________________________________ ASIGNACION __________________________________
+
+#_______________________________________DECLARACION SIN ASIGNAION ________________________
+def p_declaracionsinAsignacion(t) :
+    ''' declaracion_sinAsig : tipo ID fin_instr '''
+    t[0] = Declaracion_sinAsignacion(t[1],t[2],t.lineno(2), find_column(input, t.slice[2]))
+
+#_______________________________________ ASIGNACION ______________________________________
 def p_asignacion(t):
     ''' asignacion : ID IGUAL  expresion fin_instr'''
     t[0] =  Asignacion(t[1],t[3],t.lineno(1), find_column(input, t.slice[1]))
@@ -357,6 +377,11 @@ def p_caso(t):
 
 
 
+#_______________________________________ CONTINUE ___________________________________
+def p_continue(t):
+    '''continue : Rcontinue fin_instr'''
+    t[0] = Continue(t.lineno(1), find_column(input, t.slice[1]))
+
 #_______________________________________ PUNTO COMA __________________________________
 def p_puntocoma(t):
     ''' fin_instr : PUNTOCOMA
@@ -370,6 +395,7 @@ def p_expresion_binaria(t):
     expresion : expresion MAS expresion
             | expresion MENOS expresion
             | expresion POR expresion
+            | expresion DIV expresion
             | expresion POT expresion
             | expresion MOD expresion
             | expresion MENORIGUAL expresion
@@ -448,7 +474,15 @@ def p_primitivo_caracter(t):
     t[0] = Primitivos(TIPO.CHARACTER,t[1],t.lineno(1), find_column(input, t.slice[1]))
 def p_identificador(t):
     '''expresion : ID '''
-    t[0] = Identificador(t[1], t.lineno(1), find_column(input, t.slice[1]))
+    t[0] = Identificador(t[1],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_null(t):
+    '''expresion : Rnull '''
+    t[0] = Primitivos(TIPO.NULO,None,t.lineno(1), find_column(input, t.slice[1]))
+
+def p_incremento(t):
+    ''' expresion : tipo_incremento '''
+    t[0] = t[1]
 
 
 import ply.yacc as yacc

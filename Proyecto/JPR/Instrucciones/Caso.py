@@ -12,4 +12,4 @@ class Caso(Instruccion):
         self.columna = columna
     
     def interpretar(self,tree,table):
-        pass
+        return self
