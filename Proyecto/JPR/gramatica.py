@@ -131,12 +131,12 @@ def t_ID(t):
      return t
 
 def t_CADENA(t):
-    r'(\".*?\")'
-    t.value = t.value[1:-1] # remuevo las comillas
+    r'\"((?:[^"\\]|\\.)*)\"'
+    t.value = t.value.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\"", "\"").replace("\\\\", "\\")[1:-1]
     return t
 
 def t_CARACTER(t):
-    r'\'.\''
+    r"\'((?:[^'\\]|\\(t|\'|\n|\"|r|\\))*)\'"
     t.value = t.value[1:-1] # remuevo las comillas simples
     return t
 
@@ -161,6 +161,8 @@ def t_newline(t):
     
 def t_error(t):
     errores.append(Excepcion("Lexico","Error léxico." + t.value[0] , t.lexer.lineno, find_column(input, t)))
+    #print(str( t.value[0] )+ str(t.lexer.lineno)+":"+str(find_column(input, t)))
+    #errores.append(Error(t.value[0],"LEXICO",t.lexer.lineno, find_column(input, t)))
     t.lexer.skip(1)
 
 # Compute column.
@@ -219,6 +221,9 @@ from Expresiones.Relacional import Relacional
 from Expresiones.Logica import Logica
 from Expresiones.Identificador import Identificador
 
+#___________________________________ REPORTE ______________________________________
+from Reporte.Reporte import reporte
+
 def p_init(t) :
     'init            : instrucciones'
     t[0] = t[1]
@@ -255,14 +260,22 @@ def p_instruccion(t) :
     t[0] = t[1]
 
 def p_instruccion_error(t):
-    'instruccion        : error PUNTOCOMA'
+    'instruccion        : error errores'
     errores.append(Excepcion("Sintáctico","Error Sintáctico." + str(t[1].value) , t.lineno(1), find_column(input, t.slice[1])))
     t[0] = ""
+
+def p_instruccion_errores(t):
+    '''errores : PUNTOCOMA
+                | LLAVEC'''
+    t[0] = t[1]
+
+
 #_______________________________________ IMPRIMIR ______________________________________
 
 def p_imprimir(t) :
     'imprimir_instr : Rprint PARA expresion PARC fin_instr'
     t[0] = Imprimir(t[3], t.lineno(1), find_column(input, t.slice[1]))
+
 
 #_______________________________________ DECLARACION __________________________________
 def p_declaracion(t):
@@ -290,15 +303,19 @@ def p_tipo(t):
     elif t[1].lower() == 'var':
         t[0] = TIPO.VAR
 
+
 #_______________________________________DECLARACION SIN ASIGNAION ________________________
 def p_declaracionsinAsignacion(t) :
     ''' declaracion_sinAsig : tipo ID fin_instr '''
     t[0] = Declaracion_sinAsignacion(t[1],t[2],t.lineno(2), find_column(input, t.slice[2]))
 
+
 #_______________________________________ ASIGNACION ______________________________________
 def p_asignacion(t):
     ''' asignacion : ID IGUAL  expresion fin_instr'''
     t[0] =  Asignacion(t[1],t[3],t.lineno(1), find_column(input, t.slice[1]))
+
+
 #_______________________________________ IF _________________________________________
 def p_if(t) :
     'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC'
@@ -312,15 +329,19 @@ def p_if_elseIf_else(t) :
     'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC Relse if'
     t[0] = If(t[3], t[6], None, t[9], t.lineno(1), find_column(input, t.slice[1]))
 
+
 #______________________________________ BREAK ________________________________________
 def p_break(t):
     'break : Rbreak fin_instr'
     t[0] = Break(t.lineno(1), find_column(input, t.slice[1]))
 
+
 #______________________________________ WHILE _______________________________________
 def p_while(t):
     ''' while : Rwhile PARA expresion PARC LLAVEA instrucciones LLAVEC '''
     t[0] = While(t[3],t[6],t.lineno(1), find_column(input, t.slice[1]))
+
+
 
 #______________________________________ TIPO INCREMENTO _____________________________
 def p_incrementos(t):
@@ -330,6 +351,8 @@ def p_incrementos(t):
         t[0] = Incremento(t[1],OperadorIncremento.MASMAS,t.lineno(1), find_column(input, t.slice[1]))
     elif t[2]=='--':
         t[0] = Incremento(t[1],OperadorIncremento.MENOSMENOS,t.lineno(1), find_column(input, t.slice[1]))
+
+
 #_______________________________________    FOR _____________________________________
 def p_for(t):
     ''' for : Rfor PARA declar_asig expresion PUNTOCOMA actualizacion PARC LLAVEA instrucciones LLAVEC'''
@@ -343,6 +366,7 @@ def p_actualizacion_asig(t):
     '''actualizacion : asignacion
                     |  tipo_incremento'''
     t[0] = t[1]
+
 #______________________________________ SWITCH ______________________________________
 def p_switch_casos(t):
     ''' switch : Rswitch PARA expresion PARC LLAVEA listaCaso LLAVEC '''
@@ -377,10 +401,13 @@ def p_caso(t):
 
 
 
+
+
 #_______________________________________ CONTINUE ___________________________________
 def p_continue(t):
     '''continue : Rcontinue fin_instr'''
     t[0] = Continue(t.lineno(1), find_column(input, t.slice[1]))
+
 
 #_______________________________________ PUNTO COMA __________________________________
 def p_puntocoma(t):
@@ -527,3 +554,10 @@ for instruccion in ast.getInstrucciones():      # REALIZAR LAS ACCIONES
         ast.updateConsola(value.toString())
 
 print(ast.getConsola())
+
+def crearReporte(nombre):
+    reporte(nombre,ast.getExcepciones())
+
+
+def obtenerConsola():
+    return ast.getConsola()

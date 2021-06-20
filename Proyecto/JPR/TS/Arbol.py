@@ -24,7 +24,7 @@ class Arbol:
         self.consola = consola
 
     def updateConsola(self,cadena):
-        self.consola += str(cadena) + '\n'
+        self.consola += '>>'+str(cadena) + '\n' #aqui se le agrego >> para la consola
 
     def getTSGlobal(self):
         return self.TSglobal
