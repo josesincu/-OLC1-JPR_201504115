@@ -289,7 +289,7 @@ def rep_tablasimbolos():
 def rep_errores():
     #Cambia la ruta para indicar la localización del archivo
     nombreArchivo = '/home/dark/A_2021/Vaciones_Junio/Compi1/Laboratorio/Proyecto1/Proyecto/JPR/' +nombreFile+'.html'
-    crearReporte(nombreFile)
+    #crearReporte(nombreFile)
     webbrowser.open_new_tab(nombreArchivo)
 
 def continuar_ejecucionDesc():
@@ -389,7 +389,7 @@ def abrir():
     pathFile = FileDialog.askopenfilename(
         initialdir='.',
         filetypes=( 
-            ("Archivos de texto", "*"),  
+            ("Archivos de texto", "*.jpr"),  
         ), 
         title="Abrir Archivo"
     )
