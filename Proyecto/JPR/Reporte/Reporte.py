@@ -1,5 +1,4 @@
 def reporte(nombre,listaErrores):
-    print("Entro en reporte")
     with open(nombre+'.html', 'w') as f:
                
         f.write("<html>")

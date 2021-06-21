@@ -26,7 +26,8 @@ reservadas = {
     'case' : 'Rcase',
     'default' : 'Rdefault',
     'continue' : 'Rcontinue',
-    'null' : 'Rnull'
+    'null' : 'Rnull',
+    'main' : 'Rmain'
 }
 
 tokens  = [
@@ -209,6 +210,8 @@ from Instrucciones.For import For
 from Instrucciones.Switch import Switch
 from Instrucciones.Caso import Caso
 from Instrucciones.Continue import Continue
+from Instrucciones.Main import Main
+from Instrucciones.Funcion import Funcion
 
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
@@ -256,7 +259,8 @@ def p_instruccion(t) :
                         | tipo_incremento 
                         | for
                         | switch 
-                        | continue'''
+                        | continue
+                        | main'''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -269,6 +273,10 @@ def p_instruccion_errores(t):
                 | LLAVEC'''
     t[0] = t[1]
 
+#_______________________________________ MAIN _________________________________________
+def p_main(t):
+    ''' main : Rmain PARA PARC LLAVEA instrucciones  LLAVEC'''
+    t[0] = Main(t[5],t.lineno(1), find_column(input, t.slice[1]))
 
 #_______________________________________ IMPRIMIR ______________________________________
 
@@ -440,6 +448,8 @@ def p_expresion_binaria(t):
         t[0] = Aritmetica(OperadorAritmetico.MENOS, t[1],t[3], t.lineno(2), find_column(input, t.slice[2]))
     elif t[2] == '*':
         t[0] = Aritmetica(OperadorAritmetico.POR,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
+    elif t[2] == '/':
+        t[0] = Aritmetica(OperadorAritmetico.DIV, t[1],t[3], t.lineno(2), find_column(input, t.slice[2]))
     elif t[2] == '**':
         t[0] = Aritmetica(OperadorAritmetico.POT,t[1],t[3],t.lineno(2), find_column(input, t.slice[2]))
     elif t[2] == '%':
@@ -533,31 +543,5 @@ def parse(inp) :
 
 #INTERFAZ
 
-f = open("./entrada.txt", "r")
-entrada = f.read()
-
-from TS.Arbol import Arbol
-from TS.TablaSimbolos import TablaSimbolos
-
-instrucciones = parse(entrada) #ARBOL AST
-ast = Arbol(instrucciones)
-TSGlobal = TablaSimbolos()
-ast.setTSglobal(TSGlobal)
-for error in errores:                   #CAPTURA DE ERRORES LEXICOS Y SINTACTICOS
-    ast.getExcepciones().append(error)
-    ast.updateConsola(error.toString())
-
-for instruccion in ast.getInstrucciones():      # REALIZAR LAS ACCIONES
-    value = instruccion.interpretar(ast,TSGlobal)
-    if isinstance(value, Excepcion) :
-        ast.getExcepciones().append(value)
-        ast.updateConsola(value.toString())
-
-print(ast.getConsola())
-
-def crearReporte(nombre):
-    reporte(nombre,ast.getExcepciones())
 
 
-def obtenerConsola():
-    return ast.getConsola()

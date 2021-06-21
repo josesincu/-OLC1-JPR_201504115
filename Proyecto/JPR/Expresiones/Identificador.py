@@ -15,3 +15,4 @@ class Identificador(Instruccion):
             return Excepcion("Semantico", "Variable " + self.identificador + " no encontrada.", self.fila, self.columna)
         self.tipo = simbolo.getTipo()
         return simbolo.getValor()
+        

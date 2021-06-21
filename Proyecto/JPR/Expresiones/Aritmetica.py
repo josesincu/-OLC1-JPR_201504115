@@ -102,7 +102,7 @@ class Aritmetica(Instruccion):
                 #cadena + int
                 self.tipo = TIPO.CADENA
                 return str(self.obtenerVal(self.OperacionIzq.tipo, izq)) + str(self.obtenerVal(self.OperacionDer.tipo, der))
-            elif self.OperacionIzq.tipo == TIPO.ENTERO and self.OperacionDer.tipo == TIPO.DECIMAL:
+            elif self.OperacionIzq.tipo == TIPO.CADENA and self.OperacionDer.tipo == TIPO.DECIMAL:
                 #cadena + double
                 self.tipo = TIPO.CADENA
                 return str(self.obtenerVal(self.OperacionIzq.tipo, izq)) + str(self.obtenerVal(self.OperacionDer.tipo, der))
@@ -185,18 +185,18 @@ class Aritmetica(Instruccion):
                 #double * double
                 self.tipo = TIPO.DECIMAL
                 return self.obtenerVal(self.OperacionIzq.tipo, izq) * self.obtenerVal(self.OperacionDer.tipo, der)
-            return Excepcion("Semantico", "Tipo Erroneo de operacion para -.", self.fila, self.columna)
+            return Excepcion("Semantico", "Tipo Erroneo de operacion para *.", self.fila, self.columna)
 
         elif self.operador == OperadorAritmetico.DIV: #Division
             #--------------------------- int vrs tipos ------------------------------------
             if self.OperacionIzq.tipo == TIPO.ENTERO and self.OperacionDer.tipo == TIPO.ENTERO:
                 #int / int
                 self.tipo = TIPO.DECIMAL
-                return self.obtenerVal(self.OperacionIzq.tipo, izq) / self.obtenerVal(self.OperacionDer.tipo, der)
+                return float(self.obtenerVal(self.OperacionIzq.tipo, izq)) / float(self.obtenerVal(self.OperacionDer.tipo, der))
             elif self.OperacionIzq.tipo == TIPO.ENTERO and self.OperacionDer.tipo == TIPO.DECIMAL:
                 #int / double
                 self.tipo = TIPO.DECIMAL
-                return self.obtenerVal(self.OperacionIzq.tipo, izq) / self.obtenerVal(self.OperacionDer.tipo, der)
+                return float(self.obtenerVal(self.OperacionIzq.tipo, izq)) / float(self.obtenerVal(self.OperacionDer.tipo, der))
 
             #-------------------------- double vrs tipos -------------------------------------
             if self.OperacionIzq.tipo == TIPO.DECIMAL and self.OperacionDer.tipo == TIPO.ENTERO:
@@ -207,7 +207,7 @@ class Aritmetica(Instruccion):
                 #double / double
                 self.tipo = TIPO.DECIMAL
                 return self.obtenerVal(self.OperacionIzq.tipo, izq) / self.obtenerVal(self.OperacionDer.tipo, der)
-            return Excepcion("Semantico", "Tipo Erroneo de operacion para -.", self.fila, self.columna)
+            return Excepcion("Semantico", "Tipo Erroneo de operacion para /.", self.fila, self.columna)
         
         elif self.operador == OperadorAritmetico.POT: #POTENCIA
             #--------------------------- int vrs tipos ------------------------------------
@@ -229,7 +229,7 @@ class Aritmetica(Instruccion):
                 #double ** double
                 self.tipo = TIPO.DECIMAL
                 return self.obtenerVal(self.OperacionIzq.tipo, izq) ** self.obtenerVal(self.OperacionDer.tipo, der)
-            return Excepcion("Semantico", "Tipo Erroneo de operacion para -.", self.fila, self.columna)
+            return Excepcion("Semantico", "Tipo Erroneo de operacion para **.", self.fila, self.columna)
         
         elif self.operador == OperadorAritmetico.MOD: #MODULO
             #--------------------------- int vrs tipos ------------------------------------
@@ -251,7 +251,16 @@ class Aritmetica(Instruccion):
                 #double % double
                 self.tipo = TIPO.DECIMAL
                 return self.obtenerVal(self.OperacionIzq.tipo, izq) % self.obtenerVal(self.OperacionDer.tipo, der)
-            return Excepcion("Semantico", "Tipo Erroneo de operacion para -.", self.fila, self.columna)
+            return Excepcion("Semantico", "Tipo Erroneo de operacion para %.", self.fila, self.columna)
+        if self.operador == OperadorAritmetico.UMENOS: #NEGACION UNARIA
+            if self.OperacionIzq.tipo == TIPO.ENTERO:
+                self.tipo = TIPO.ENTERO
+                return - self.obtenerVal(self.OperacionIzq.tipo, izq)
+            elif self.OperacionIzq.tipo == TIPO.DECIMAL:
+                self.tipo = TIPO.DECIMAL
+                return - self.obtenerVal(self.OperacionIzq.tipo, izq)
+            return Excepcion("Semantico", "Tipo Erroneo de operacion para - unario.", self.fila, self.columna)
+        return Excepcion("Semantico", "Tipo de Operacion no Especificado.", self.fila, self.columna)
 
 
 

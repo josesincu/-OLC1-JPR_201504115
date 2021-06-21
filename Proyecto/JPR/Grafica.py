@@ -5,7 +5,7 @@ import tkinter.scrolledtext as st
 from tkinter import filedialog as FileDialog
 from tkinter import colorchooser as ColorChooser
 from tkinter.font import Font
-from gramatica import parse,obtenerConsola,crearReporte
+from gramatica import parse,getErrores
 import os
 import webbrowser
 
@@ -34,9 +34,6 @@ def font_resaltar():
     editor.tag_config('comentario', foreground='gray', font=editor_font2)
     
     
-    
-    
-
 def aplicarColor():
     #______________________- EDITOR ____________________
     editor.tag_remove("reservada", '1.0', END)
@@ -47,6 +44,9 @@ def aplicarColor():
     #________________________ COLOREAR TEXTO _____________
     colorearTexto("numeros",r'\d+')
     colorearTexto("numeros",r'\d+\.\d+')
+
+    colorearTexto("reservada",r'int')
+
     colorearTexto("otros",r'[a-zA-Z][a-zA-Z_0-9]*')
 
     colorearTexto("reservada",r'break')
@@ -54,7 +54,7 @@ def aplicarColor():
     colorearTexto("reservada", r'\".*?\"')
     colorearTexto("reservada",r'main')
     colorearTexto("reservada",r'if')
-    colorearTexto("reservada",r'int')
+    
     colorearTexto("reservada",r'char')
     colorearTexto("reservada",r'double')
     colorearTexto("reservada",r'float')
@@ -74,8 +74,8 @@ def aplicarColor():
     colorearTexto("otros",r'=')
     
 
-    colorearTexto("cadenas",r'\"((?:[^"\\]|\\.)*)\"')
-    colorearTexto("cadenas",r'\'.\'')
+    colorearTexto("cadenas",r'\"((?:[^"\\]|\\.)*)\"')#cadena string
+    colorearTexto("cadenas",r"\'((?:[^'\\]|\\(t|\'|\n|\"|r|\\))*)\'")#caracter
 
     colorearTexto("comentario",r'\#\*(.|\n)*?\*\#')
     colorearTexto("comentario",r'\#.*\n')
@@ -92,7 +92,7 @@ def colorearTexto(tipo,regex):
             break
         index2  ='{}+{}c'.format(pos, count.get())
         editor.tag_add(tipo, pos, index2)
-    colorearTextoAugus(tipo,regex)
+    #colorearTextoAugus(tipo,regex)
 
 def colorearTextoAugus(tipo,regex):
     count = IntVar(editor)
@@ -126,17 +126,82 @@ def pintar_TS_IDE():
                     debugger.insert(padre, END, text="", values=(val))
             else:
                 debugger.insert("", END, text=sim.id, values=(sim.valor))
+#__________________ Tabla ________________________________
+from TS.Arbol import Arbol
+from TS.TablaSimbolos import TablaSimbolos
+from TS.Excepcion import Excepcion
+#________________importanto instrucciones _________________
+#from Instrucciones.Imprimir import Imprimir
+from Instrucciones.Declaracion import Declaracion
+from Instrucciones.Declaracion_sinAsignacion import Declaracion_sinAsignacion
+from Instrucciones.Asignacion import Asignacion
+#from Instrucciones.If import If
+from Instrucciones.Break import Break
+#from Instrucciones.While import While
+#from Instrucciones.Incremento import Incremento
+#from Instrucciones.For import For
+#from Instrucciones.Switch import Switch
+#from Instrucciones.Caso import Caso
+#from Instrucciones.Continue import Continue
+from Instrucciones.Main import Main
+from Instrucciones.Funcion import Funcion
+#___________________________________ REPORTE ______________________________________
+from Reporte.Reporte import reporte
 
-def ejec_ascendenteMinorC():
-    #c3d.limpiarValores()
+def ejecutar_entrada():
     cont=editor.get("1.0",END)
-    #resultado=c3d.inicializarEjecucionAscendente(cont)
-    resultado = parse(cont)
-    editorC3D.delete(1.0, 'end')           
-    editorC3D.insert('insert',obtenerConsola())
-    consola.insert('insert',obtenerConsola())
     
-    #ejec_ascendente()
+    instrucciones = parse(cont) # ARBOL AST
+    ast = Arbol(instrucciones)
+    TSGlobal = TablaSimbolos()
+    ast.setTSglobal(TSGlobal)
+    
+    
+    for error in getErrores():                   # CAPTURA DE ERRORES LEXICOS Y SINTACTICOS
+        ast.getExcepciones().append(error)
+        ast.updateConsola(error.toString())
+
+    for instruccion in ast.getInstrucciones():      # 1ERA PASADA (DECLARACIONES Y ASIGNACIONES)
+        if isinstance(instruccion, Funcion):
+            ast.addFuncion(instruccion)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+        if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion):
+            value = instruccion.interpretar(ast,TSGlobal)
+            if isinstance(value, Excepcion) :
+                ast.getExcepciones().append(value)
+                ast.updateConsola(value.toString())
+            if isinstance(value, Break): 
+                err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
+                ast.getExcepciones().append(err)
+                ast.updateConsola(err.toString())
+        
+    for instruccion in ast.getInstrucciones():      # 2DA PASADA (MAIN)
+        contador = 0
+        if isinstance(instruccion, Main):
+            contador += 1
+            if contador == 2: # VERIFICAR LA DUPLICIDAD
+                err = Excepcion("Semantico", "Existen 2 funciones Main", instruccion.fila, instruccion.columna)
+                ast.getExcepciones().append(err)
+                ast.updateConsola(err.toString())
+                break
+            value = instruccion.interpretar(ast,TSGlobal)
+            if isinstance(value, Excepcion) :
+                ast.getExcepciones().append(value)
+                ast.updateConsola(value.toString())
+            if isinstance(value, Break): 
+                err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
+                ast.getExcepciones().append(err)
+                ast.updateConsola(err.toString())
+        
+    for instruccion in ast.getInstrucciones():    # 3ERA PASADA (SENTENCIAS FUERA DE MAIN)
+        if not (isinstance(instruccion, Main) or isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion, Funcion) or isinstance(instruccion,Declaracion_sinAsignacion)):
+            err = Excepcion("Semantico", "Sentencias fuera de Main", instruccion.fila, instruccion.columna)
+            ast.getExcepciones().append(err)
+            ast.updateConsola(err.toString())
+
+    #_________________________________________________
+    reporte(nombreFile,ast.getExcepciones())
+    consola.insert('insert',ast.getConsola())
+    
 
 
 def iniciar_debug():
@@ -337,7 +402,6 @@ def abrir():
         editor.insert('insert', contenido)  
         archivo.close()                    
         root.title(pathFile + " -JPR") 
-
         aplicarColor()
 
 def guardar():
@@ -354,7 +418,7 @@ def guardar():
 def guardar_como():
     global pathFile
     archivo = FileDialog.asksaveasfile(title="Guardar archivo", mode='w',
-            defaultextension=".txt")
+            defaultextension=".jpr")
     if archivo is not None:
         pathFile = archivo.name  
         contenido = editor.get(1.0, 'end-1c')  
@@ -422,7 +486,7 @@ ayudamenu.add_command(label="Acerca de...", command=acerca_de)
 
 #__________________________ EJECUTAR ________________________________
 ejecutarmenu = Menu(menubar, tearoff=0)
-ejecutarmenu.add_command(label="Analizar", command=ejec_ascendenteMinorC)
+ejecutarmenu.add_command(label="Analizar", command=ejecutar_entrada)
 ejecutarmenu.add_separator()
 
 ejecutarmenu.add_command(label="AST", command=ast_grafica)
@@ -498,10 +562,10 @@ FrameLines.config(width=5, height=25,bg="#D5DBDB",
              padx=0, pady=0, selectbackground="black")
 
 editor = st.ScrolledText(cajaPrincipal)
-editorC3D = Text(cajaPrincipal)
-editorC3D.pack(side=RIGHT)
-editorC3D.config(width=30, height=25,bg="#D5DBDB",
-             padx=0, pady=0, background="white")
+#editorC3D = Text(cajaPrincipal)
+#editorC3D.pack(side=RIGHT)
+#editorC3D.config(width=30, height=25,bg="#D5DBDB",
+#            padx=0, pady=0, background="white")
 select_font = Font(family="Helvetica", size=8, weight="normal" )
 editor.tag_config('buscar', background='#ffff00', font=select_font)
 font_resaltar()
