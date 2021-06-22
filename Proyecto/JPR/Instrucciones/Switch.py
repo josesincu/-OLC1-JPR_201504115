@@ -14,15 +14,9 @@ class Switch(Instruccion):
         self.fila = fila
         self.columna = columna
     
-    def interpretar(self,tree,table):
-        #valor_expresion = 
+    def interpretar(self,tree,table): 
         self.expresion.interpretar(tree,table)
-        #if isinstance(valor_expresion,int):
-        #    print("soy entero")
-        #elif isinstance(valor_expresion,str):
-        #    print("soy string")
-        #elif isinstance(valor_expresion,float):
-        #   print("soy flotante")
+        
         hayBreak = False
         ejecutado = False
         cont = 1

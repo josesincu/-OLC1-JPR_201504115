@@ -26,32 +26,53 @@ ejecucion_automatica=1
 
 
 def font_resaltar():
+    '''
     editor_font2 = Font(family="Helvetica", size=12, weight="normal" )
     editor.tag_config('otros', foreground='black', font=editor_font2)
     editor.tag_config('reservada', foreground="blue",font=editor_font2)
     editor.tag_config('cadenas', foreground='orange', font=editor_font2)
     editor.tag_config('numeros', foreground='#6a0dad', font=editor_font2)
     editor.tag_config('comentario', foreground='gray', font=editor_font2)
-    
+    '''
+    editor_font2 = Font(family="Helvetica", size=12, weight="normal" )
+    editor.tag_config('numeros', foreground='#6a0dad', font=editor_font2)
+    editor.tag_config('otros', foreground='black', font=editor_font2)
+    editor.tag_config('cadenas', foreground='orange', font=editor_font2)
+    editor.tag_config('reservada', foreground="blue",font=editor_font2)
+    editor.tag_config('comentario', foreground='gray', font=editor_font2)
+
     
 def aplicarColor():
     #______________________- EDITOR ____________________
+    
+    editor.tag_remove("numeros", '1.0', END)
+    editor.tag_remove("otros", '1.0', END)
+    editor.tag_remove("cadenas", '1.0', END)
     editor.tag_remove("reservada", '1.0', END)
-    editor.tag_remove("numero", '1.0', END)
-    editor.tag_remove("variables", '1.0', END)
-    editor.tag_remove("variables", '1.0', END)
+    editor.tag_remove("comentario", '1.0', END)
+    
 
     #________________________ COLOREAR TEXTO _____________
     colorearTexto("numeros",r'\d+')
     colorearTexto("numeros",r'\d+\.\d+')
 
-    colorearTexto("reservada",r'int')
-
+    colorearTexto("otros",r'\[')
+    colorearTexto("otros",r'\]')
+    colorearTexto("otros",r';')
+    colorearTexto("otros",r'&')
+    colorearTexto("otros",r'\(')
+    colorearTexto("otros",r'\)')
+    colorearTexto("otros",r'{')
+    colorearTexto("otros",r'}')
+    colorearTexto("otros",r'=')
     colorearTexto("otros",r'[a-zA-Z][a-zA-Z_0-9]*')
+    
+    colorearTexto("cadenas",r'\"((?:[^"\\]|\\.)*)\"')#cadena string
+    colorearTexto("cadenas",r"\'((?:[^'\\]|\\(t|\'|\n|\"|r|\\))*)\'")#caracter
 
+    colorearTexto("reservada",r'int')
     colorearTexto("reservada",r'break')
-    colorearTexto("reservada", r'\'.*?\'')
-    colorearTexto("reservada", r'\".*?\"')
+
     colorearTexto("reservada",r'main')
     colorearTexto("reservada",r'if')
     
@@ -63,22 +84,9 @@ def aplicarColor():
     colorearTexto("reservada",r'break')
     colorearTexto("reservada",r'var')
 
-    colorearTexto("otros",r'\[')
-    colorearTexto("otros",r'\]')
-    colorearTexto("otros",r';')
-    colorearTexto("otros",r'&')
-    colorearTexto("otros",r'\(')
-    colorearTexto("otros",r'\)')
-    colorearTexto("otros",r'{')
-    colorearTexto("otros",r'}')
-    colorearTexto("otros",r'=')
-    
-
-    colorearTexto("cadenas",r'\"((?:[^"\\]|\\.)*)\"')#cadena string
-    colorearTexto("cadenas",r"\'((?:[^'\\]|\\(t|\'|\n|\"|r|\\))*)\'")#caracter
-
     colorearTexto("comentario",r'\#\*(.|\n)*?\*\#')
     colorearTexto("comentario",r'\#.*\n')
+    
     
 
     
@@ -92,21 +100,12 @@ def colorearTexto(tipo,regex):
             break
         index2  ='{}+{}c'.format(pos, count.get())
         editor.tag_add(tipo, pos, index2)
-    #colorearTextoAugus(tipo,regex)
-
-def colorearTextoAugus(tipo,regex):
-    count = IntVar(editor)
-    pos = editorC3D.index("end")
-    while True:
-        pos = editorC3D.search(regex,  pos, "1.0",  backwards=True, regexp=True, count=count)
-        if not pos:
-            break
-        index2  ='{}+{}c'.format(pos, count.get())
-        editorC3D.tag_add(tipo, pos, index2)
+    
 
 def pintar_TS_IDE():
     for row in debugger.get_children():
-        debugger.delete(row)
+        debugger.delete(row)#colorearTextoAugus(tipo,regex)
+
 
     if len(Inter.instrucciones)>0:
         lis_symbol=Inter.ts_global.simbolos
@@ -126,6 +125,7 @@ def pintar_TS_IDE():
                     debugger.insert(padre, END, text="", values=(val))
             else:
                 debugger.insert("", END, text=sim.id, values=(sim.valor))
+
 #__________________ Tabla ________________________________
 from TS.Arbol import Arbol
 from TS.TablaSimbolos import TablaSimbolos
@@ -279,9 +279,6 @@ def ast_grafica():
     c3d.graficarAST()
     #Inter.generarReporteAST()
 
-def gram_desc():
-    Inter.generarReporteGramaticalDesc()
-
 def rep_tablasimbolos():
     c3d.tabla_simbolosMinusC()
     #Inter.generarReporteTS()
@@ -291,32 +288,6 @@ def rep_errores():
     nombreArchivo = '/home/dark/A_2021/Vaciones_Junio/Compi1/Laboratorio/Proyecto1/Proyecto/JPR/' +nombreFile+'.html'
     #crearReporte(nombreFile)
     webbrowser.open_new_tab(nombreArchivo)
-
-def continuar_ejecucionDesc():
-    global no_instruccion, waitForCommand
-
-    while no_instruccion<len(Inter.instrucciones):
-        if waitForCommand==0 or waitForCommand==2: #0=Sin Entrada, 1=Esperando, 2=Comando Ingresado
-            if no_instruccion<len(Inter.instrucciones) :
-                is_asig=Inter.instrucciones[no_instruccion]
-                if isinstance(is_asig,Asignacion): 
-                    # COMANDO PARA LEER DE CONSOLA
-                    if isinstance(is_asig.valor,Read) and waitForCommand==0:
-                        waitForCommand=1
-                        #no_instruccion=i
-                        return None
-                #EJECUTAR INSTRUCCION
-                instr_temp=Inter.ejecutarInstruccionUnitaria(1,no_instruccion)
-                if instr_temp is not None:
-                    if instr_temp==-10 : # EXIT
-                        no_instruccion=len(Inter.instrucciones)
-                    else: #GOTO
-                        no_instruccion=instr_temp
-                waitForCommand=0
-                no_instruccion+=1
-            else:
-                MessageBox.showinfo("Finalizado","Ultima instruccion ejecutada.")
-
 
 def wait_for_command():
     global comando_consola
@@ -427,7 +398,7 @@ def guardar_como():
         archivo.close()
         MessageBox.showinfo("Archivo guardado","El archivo se guardo exitosamente")
     else:
-        MessageBox.showinfo("Archivo no guardado - Augus","El archivo no se guardó")
+        MessageBox.showinfo("El archivo no se guardó")
 
 
 def multiple_yview(*args):
@@ -588,7 +559,7 @@ consola.config(width=95,height=11,padx=1, pady=3, font=consola_font, cursor="arr
                 selectbackground="black",background="black", foreground="white")
 #consola.insert('end','>>JPR-Compiladores1-USAC\n>>')
 #consola.insert('end','>>HOla MUNDO')
-consola.bind("<Return>",comando_ingresado)
+#consola.bind("<Return>",comando_ingresado)
 consola.bind("<Key>",agregarSalto)
 consola.config(insertbackground="white")
 

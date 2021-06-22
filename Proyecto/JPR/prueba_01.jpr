@@ -5,8 +5,8 @@
 main(){
   
   print("---------- SENTENCIA SWITCH ----------");
-  int swi_1 = 5;
-  switch(swi_1*5){
+  int swi_1 = 25;
+  switch(swi_1){
     case 10:
       print("esto no debería de estar aquí");
     case 15:
