@@ -4,6 +4,7 @@ from Abstract.Instruccion import Instruccion
 from TS.Excepcion import Excepcion
 from TS.TablaSimbolos import TablaSimbolos
 from Instrucciones.Break import Break
+from Instrucciones.Return import Return
 
 
 class Funcion(Instruccion):
@@ -16,8 +17,6 @@ class Funcion(Instruccion):
         self.tipo = TIPO.NULO
     
     def interpretar(self, tree, table):
-        pass
-        '''
         nuevaTabla = TablaSimbolos(table) 
         for instruccion in self.instrucciones:      # REALIZAR LAS ACCIONES
             value = instruccion.interpretar(tree,nuevaTabla)
@@ -33,4 +32,3 @@ class Funcion(Instruccion):
                 return value.result
             
         return None
-        '''

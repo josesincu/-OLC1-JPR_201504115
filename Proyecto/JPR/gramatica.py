@@ -27,7 +27,9 @@ reservadas = {
     'default' : 'Rdefault',
     'continue' : 'Rcontinue',
     'null' : 'Rnull',
-    'main' : 'Rmain'
+    'main' : 'Rmain',
+    'func' : 'Rfunc',
+    'return': 'Rreturn'
 }
 
 tokens  = [
@@ -36,6 +38,7 @@ tokens  = [
     'PARC',
     'LLAVEA',
     'LLAVEC',
+    'COMA',
     'MAS',
     'MENOS',
     'POR',
@@ -89,6 +92,7 @@ t_IGUAL         = r'='
 t_MASMAS        = r'\+\+'
 t_MENOSMENOS    = r'--'
 t_DOSPUNTO     = r':'
+t_COMA         = r','
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
@@ -212,6 +216,8 @@ from Instrucciones.Caso import Caso
 from Instrucciones.Continue import Continue
 from Instrucciones.Main import Main
 from Instrucciones.Funcion import Funcion
+from Instrucciones.Return import Return
+from Instrucciones.Llamada import Llamada
 
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
@@ -260,7 +266,10 @@ def p_instruccion(t) :
                         | for
                         | switch 
                         | continue
-                        | main'''
+                        | main
+                        | funcion 
+                        | retorno
+                        | llamada'''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -423,6 +432,53 @@ def p_puntocoma(t):
                     | '''
     t[0]=None
 
+
+#_______________________________________ FUNCION ______________________________________
+def p_funcion(t):
+    ''' funcion : Rfunc ID PARA parametros PARC LLAVEA instrucciones LLAVEC '''
+    t[0]=Funcion(t[2],t[4],t[7],t.lineno(1), find_column(input, t.slice[1]))
+def p_funcion_noparam(t):
+    '''funcion : Rfunc ID PARA PARC LLAVEA instrucciones LLAVEC'''
+    t[0]=Funcion(t[2],[],t[6],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_paramtros(t):
+    '''parametros : parametros COMA parametro'''
+    t[1].append(t[3])
+    t[0] = t[1]
+
+def p_parametro_1(t):
+    '''parametros : parametro'''
+    t[0] = [t[1]]
+
+def p_parametro(t):
+    '''parametro : tipo ID'''
+    t[0] = {'tipo':t[1],'identificador':t[2]}
+
+#_________________________________________RETURN _______________________________________
+def p_retorno(t):
+    ''' retorno : Rreturn expresion fin_instr '''
+    t[0]= Return(t[2],t.lineno(1), find_column(input, t.slice[1]))
+
+#_______________________________________ LLAMADA _____________________________________
+def p_llamada(t):
+    ''' llamada : ID PARA parametros_llamada PARC fin_instr '''
+    t[0]=Llamada(t[1],t[3],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_llamada_sinp(t):
+    ''' llamada : ID PARA PARC fin_instr'''
+    t[0]=Llamada(t[1],[],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_parametros_llamada(t):
+    '''parametros_llamada : parametros_llamada COMA parametro_llam'''
+    t[1].append(t[3])
+    t[0]=t[1]
+def p_parametros(t):
+    '''parametros_llamada : parametro_llam'''
+    t[0]=[t[1]]
+
+def p_parametro_llam(t):
+    '''parametro_llam : expresion'''
+    t[0]=t[1]
 #_______________________________________ EXPRESION ____________________________________
 
 def p_expresion_binaria(t):
@@ -517,9 +573,13 @@ def p_null(t):
     '''expresion : Rnull '''
     t[0] = Primitivos(TIPO.NULO,None,t.lineno(1), find_column(input, t.slice[1]))
 
-def p_incremento(t):
-    ''' expresion : tipo_incremento '''
-    t[0] = t[1]
+def p_expresion_llam(t):
+    ''' expresion : llamada'''
+    t[0]=t[1]
+
+#def p_incremento(t):
+#   ''' expresion : tipo_incremento '''
+#    t[0] = t[1]
 
 
 import ply.yacc as yacc

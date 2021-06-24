@@ -83,6 +83,9 @@ def aplicarColor():
     colorearTexto("reservada",r'switch')
     colorearTexto("reservada",r'break')
     colorearTexto("reservada",r'var')
+    colorearTexto("reservada",r'func')
+    colorearTexto("reservada",r'return')
+
 
     colorearTexto("comentario",r'\#\*(.|\n)*?\*\#')
     colorearTexto("comentario",r'\#.*\n')
@@ -145,23 +148,72 @@ from Instrucciones.Break import Break
 #from Instrucciones.Continue import Continue
 from Instrucciones.Main import Main
 from Instrucciones.Funcion import Funcion
+from Instrucciones.Return import Return
+
+#_______________________ FUNCIONES NATIVAS ______________________________________
+from Nativas.ToUpper import ToUpper
+from Nativas.ToLower import ToLower
+from Nativas.Length import Length
+from Nativas.Truncate import Truncate
+from Nativas.Round import Round
+#__________________________________ TS ___________________________________________
+from TS.Tipo import TIPO
 #___________________________________ REPORTE ______________________________________
 from Reporte.Reporte import reporte
 
+def crearNativas(ast):
+    #toUpper
+    nombre = "toUpper"
+    parametros = [{'tipo':TIPO.CADENA,'identificador':'toUpper##Param1'}]
+    instrucciones = []
+    toUpper = ToUpper(nombre, parametros, instrucciones, -1, -1)
+    ast.addFuncion(toUpper)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
+    #toLower
+    nombre = "toLower"
+    parametros = [{'tipo':TIPO.CADENA,'identificador':'toLower##Param1'}]
+    instrucciones = []
+    toLower = ToLower(nombre, parametros, instrucciones, -1, -1)
+    ast.addFuncion(toLower)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+    
+    #length
+    nombre = "Length"
+    parametros = [{'tipo':TIPO.CADENA,'identificador':'toLength##Param1'}]
+    instrucciones = []
+    length = Length(nombre, parametros, instrucciones, -1, -1)
+    ast.addFuncion(length)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
+    #truncate
+    nombre = "Truncate"
+    parametros = [{'tipo':TIPO.DECIMAL,'identificador':'toTruncate##Param1'}]#si queres otro paramteo solo agregar , y otra lista
+    instrucciones = []
+    truncate = Truncate(nombre, parametros, instrucciones, -1, -1)
+    ast.addFuncion(truncate)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
+    #Round
+    nombre = "Round"
+    parametros = [{'tipo':TIPO.DECIMAL,'identificador':'toRound##Param1'}]#si queres otro paramteo solo agregar , y otra lista
+    instrucciones = []
+    roundd = Round(nombre, parametros, instrucciones, -1, -1)
+    ast.addFuncion(roundd)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
+
 def ejecutar_entrada():
     cont=editor.get("1.0",END)
+    consola.delete('1.0', END)
     
     instrucciones = parse(cont) # ARBOL AST
     ast = Arbol(instrucciones)
     TSGlobal = TablaSimbolos()
     ast.setTSglobal(TSGlobal)
-    
+    crearNativas(ast)
     
     for error in getErrores():                   # CAPTURA DE ERRORES LEXICOS Y SINTACTICOS
         ast.getExcepciones().append(error)
         ast.updateConsola(error.toString())
 
     for instruccion in ast.getInstrucciones():      # 1ERA PASADA (DECLARACIONES Y ASIGNACIONES)
+        
         if isinstance(instruccion, Funcion):
             ast.addFuncion(instruccion)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
         if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion):
@@ -191,6 +243,11 @@ def ejecutar_entrada():
                 err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
                 ast.getExcepciones().append(err)
                 ast.updateConsola(err.toString())
+            if isinstance(value,Return):
+                err = Excepcion("Semantico", "Sentencia Return fuera de funcion o ciclo", instruccion.fila, instruccion.columna)
+                ast.getExcepciones().append(err)
+                ast.updateConsola(err.toString())
+
         
     for instruccion in ast.getInstrucciones():    # 3ERA PASADA (SENTENCIAS FUERA DE MAIN)
         if not (isinstance(instruccion, Main) or isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion, Funcion) or isinstance(instruccion,Declaracion_sinAsignacion)):
@@ -285,7 +342,7 @@ def rep_tablasimbolos():
 
 def rep_errores():
     #Cambia la ruta para indicar la localización del archivo
-    nombreArchivo = '/home/dark/A_2021/Vaciones_Junio/Compi1/Laboratorio/Proyecto1/Proyecto/JPR/' +nombreFile+'.html'
+    nombreArchivo = './' +nombreFile+'.html'
     #crearReporte(nombreFile)
     webbrowser.open_new_tab(nombreArchivo)
 
@@ -554,7 +611,7 @@ leftBOTTOM.pack(side=RIGHT)
 
 consola = Text(leftBOTTOM)
 consola.pack(side=LEFT)
-consola_font = Font(family="Helvetica", size=10, weight="normal" )
+consola_font = Font(family="Helvetica", size=12, weight="normal" )
 consola.config(width=95,height=11,padx=1, pady=3, font=consola_font, cursor="arrow",borderwidth=7,
                 selectbackground="black",background="black", foreground="white")
 #consola.insert('end','>>JPR-Compiladores1-USAC\n>>')

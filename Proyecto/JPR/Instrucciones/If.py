@@ -4,6 +4,7 @@ from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
 from Instrucciones.Break import Break
 from Instrucciones.Continue import Continue
+from Instrucciones.Return import Return
 
 
 class If(Instruccion):
@@ -31,6 +32,8 @@ class If(Instruccion):
                         return result
                     if isinstance(result,Continue):
                         return result
+                    if isinstance(result,Return):
+                        return result
 
                         
 
@@ -46,6 +49,8 @@ class If(Instruccion):
                             return result
                         if isinstance(result,Continue):
                             return result
+                        if isinstance(result,Return):
+                            return result
                 elif self.elseIf != None:
                     result = self.elseIf.interpretar(tree, table)
                     if isinstance(result, Excepcion): 
@@ -53,6 +58,8 @@ class If(Instruccion):
                     if isinstance(result, Break): 
                         return result
                     if isinstance(result,Continue):
+                        return result
+                    if isinstance(result,Return):
                         return result
 
         else:

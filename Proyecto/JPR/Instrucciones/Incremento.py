@@ -6,7 +6,7 @@ from TS.Tipo import OperadorIncremento
 
 class Incremento(Instruccion):
     def __init__(self, identificador,tipo_aumento, fila, columna):
-        self.identificador = identificador
+        self.identificador = identificador.lower()
         self.tipo_aumento = tipo_aumento
         self.fila = fila
         self.columna = columna

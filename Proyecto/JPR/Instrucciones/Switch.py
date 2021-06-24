@@ -4,6 +4,7 @@ from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
 from Instrucciones.Break import Break
 from Expresiones.Identificador import Identificador
+from Instrucciones.Return import Return
 
 
 class Switch(Instruccion):
@@ -44,6 +45,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
 
             elif self.expresion.tipo == TIPO.ENTERO and self.listaCaso[x].expresion.tipo == TIPO.DECIMAL :
                 #__________________________entero == entero && decimal == decimal
@@ -65,6 +68,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
 
             elif self.expresion.tipo == TIPO.ENTERO and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________entero == entero && cadeba == cadena
@@ -86,6 +91,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
 
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.ENTERO :
                 #__________________________ decimal == decimal && entero == entero
@@ -107,6 +114,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.DECIMAL :
                 #__________________________ decimal == decimal && decimal == decimal
@@ -129,6 +138,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________ decimal == decimal && cadena == cadena
@@ -150,6 +161,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.BOOLEANO and self.listaCaso[x].expresion.tipo == TIPO.BOOLEANO :
                 #__________________________ boleano == boleano && boleano == boleano
@@ -172,6 +185,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.BOOLEANO and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________ boleano == boleano && cadena == cadena
@@ -194,6 +209,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.CHARACTER and self.listaCaso[x].expresion.tipo == TIPO.CHARACTER :
                 #__________________________ caracter == caracter && caracter == caracter
@@ -216,6 +233,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.CADENA and self.listaCaso[x].expresion.tipo == TIPO.ENTERO :
                 #__________________________ cadena == cadena && int == int
@@ -238,6 +257,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.CADENA and self.listaCaso[x].expresion.tipo == TIPO.DECIMAL :
                 #__________________________ cadena == cadena && decimal == decimal
@@ -260,6 +281,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
             elif self.expresion.tipo == TIPO.CADENA and self.listaCaso[x].expresion.tipo == TIPO.BOOLEANO :
                 #__________________________ cadena == cadena && booleano == boleano
@@ -282,6 +305,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
 
             elif self.expresion.tipo == TIPO.CADENA and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________ cadena == cadena && cadena == cadena
@@ -303,6 +328,8 @@ class Switch(Instruccion):
                             hayBreak = True
                             ejecutado = True
                             return None
+                        if isinstance(result,Return):
+                            return result
             
 
             if hayBreak == False and (x<len(self.listaCaso)):
@@ -325,6 +352,8 @@ class Switch(Instruccion):
                     hayBreak = True
                     ejecutado = True
                     return None
+                if isinstance(result,Return):
+                    return result
 
         
             

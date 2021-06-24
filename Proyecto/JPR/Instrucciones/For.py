@@ -4,6 +4,7 @@ from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
 from Instrucciones.Break import Break
 from Instrucciones.Continue import Continue
+from Instrucciones.Return import Return
 
 class For(Instruccion):
     def __init__(self,declaracion,condicion,incremento,instrucciones,fila,columna):
@@ -17,9 +18,10 @@ class For(Instruccion):
     def interpretar(self, tree, table):
         #self.declaracion.interpretar(tree,table) #NUEVO ENTORNO
         nuevaTabla = TablaSimbolos(table)
+        self.declaracion.interpretar(tree,nuevaTabla)
         while True:
-            
-            self.declaracion.interpretar(tree,nuevaTabla)
+            print(self.declaracion)
+           # self.declaracion.interpretar(tree,nuevaTabla)
             estado = self.condicion.interpretar(tree,nuevaTabla)
             if isinstance(estado, Excepcion):
                 return estado
@@ -37,6 +39,9 @@ class For(Instruccion):
                             return None
                         if isinstance(result, Continue):
                             break
+                        if isinstance(result,Return):
+                            return result
+
                     self.incremento.interpretar(tree,nuevaTabl)
                 else:
                     break

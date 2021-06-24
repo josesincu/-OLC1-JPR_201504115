@@ -1,24 +1,20 @@
 
 
 
+
 #Iniciando la ejecución del programa a partir de aquí
 main(){
   
-  print("---------- SENTENCIA SWITCH ----------");
-  int swi_1 = 25;
-  switch(swi_1){
-    case 10:
-      print("esto no debería de estar aquí");
-    case 15:
-      print("esto no debería de estar aquí");
-    case 25:
-      print("switch case funcionando correctamente");
-    default:
-      print("acción por defecto");
+var nueva;
+nueva = 10;
+print(nueva)
+
+  var j;
+
+  for(j=0;j<10;j++){
+
+    print("Hola"+j)
   }
-  
-    # Salida de esta sección
-    # switch case funcionando correctamente
-    # acción por defecto
+
 
 }
