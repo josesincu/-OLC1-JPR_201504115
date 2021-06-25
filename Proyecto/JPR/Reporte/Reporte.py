@@ -1,5 +1,5 @@
 def reporte(nombre,listaErrores):
-    with open(nombre+'.html', 'w') as f:
+    with open('./Archivos/'+nombre+'.html', 'w') as f:
                
         f.write("<html>")
         f.write("<head><title>REPORTE DE ERRORES LEXICOS</title></head>")

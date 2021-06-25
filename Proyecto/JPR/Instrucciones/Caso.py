@@ -1,4 +1,5 @@
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Excepcion import Excepcion
 from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
@@ -13,3 +14,7 @@ class Caso(Instruccion):
     
     def interpretar(self,tree,table):
         return self
+
+    def getNodo(self):
+        nodo = NodoAST("CASO")
+        return nodo

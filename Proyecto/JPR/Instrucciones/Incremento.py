@@ -1,5 +1,6 @@
 from TS.Excepcion import Excepcion
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Simbolo import Simbolo
 from TS.Tipo import OperadorIncremento
 
@@ -23,3 +24,11 @@ class Incremento(Instruccion):
 
         if isinstance(result, Excepcion): return result
         return None
+    
+    def getNodo(self):
+        nodo = NodoAST("INCREMENTO")
+        nodo.agregarHijo(str(self.identificador))
+        nodo.agregarHijo(str(self.tipo_aumento))
+
+        #nodo.agregarHijoNodo(self.expresion.getNodo())
+        return nodo

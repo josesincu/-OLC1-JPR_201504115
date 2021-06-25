@@ -7,6 +7,8 @@ from tkinter import colorchooser as ColorChooser
 from tkinter.font import Font
 from gramatica import parse,getErrores
 import os
+#import os
+from Abstract.NodoAST import NodoAST
 import webbrowser
 
 #/home/dark/A_2021/Vaciones_Junio/Compi1/Laboratorio/Proyecto1/Proyecto/JPR/gramatica.py
@@ -183,7 +185,7 @@ def crearNativas(ast):
     length = Length(nombre, parametros, instrucciones, -1, -1)
     ast.addFuncion(length)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
 
-    #truncate
+    #truncate decimal
     nombre = "Truncate"
     parametros = [{'tipo':TIPO.DECIMAL,'identificador':'toTruncate##Param1'}]#si queres otro paramteo solo agregar , y otra lista
     instrucciones = []
@@ -254,6 +256,22 @@ def ejecutar_entrada():
             err = Excepcion("Semantico", "Sentencias fuera de Main", instruccion.fila, instruccion.columna)
             ast.getExcepciones().append(err)
             ast.updateConsola(err.toString())
+    init = NodoAST("RAIZ")
+    instr = NodoAST("INSTRUCCIONES")
+
+    for instruccion in ast.getInstrucciones():
+        instr.agregarHijoNodo(instruccion.getNodo())
+
+    init.agregarHijoNodo(instr)
+    grafo = ast.getDot(init) #DEVUELVE EL CODIGO GRAPHVIZ DEL AST
+
+    dirname = os.path.dirname(__file__)
+    print(dirname)
+    direcc = os.path.join(dirname, 'ast.dot')
+    arch = open(direcc, "w+")
+    arch.write(grafo)
+    arch.close()
+    os.system('dot -T pdf -o ast.pdf ast.dot')
 
     #_________________________________________________
     reporte(nombreFile,ast.getExcepciones())
@@ -342,7 +360,7 @@ def rep_tablasimbolos():
 
 def rep_errores():
     #Cambia la ruta para indicar la localización del archivo
-    nombreArchivo = './' +nombreFile+'.html'
+    nombreArchivo = './Archivos/' +nombreFile+'.html'
     #crearReporte(nombreFile)
     webbrowser.open_new_tab(nombreArchivo)
 
@@ -415,7 +433,7 @@ def abrir():
     global nombreFile
 
     pathFile = FileDialog.askopenfilename(
-        initialdir='.',
+        initialdir='./Archivos/',
         filetypes=( 
             ("Archivos de texto", "*.jpr"),  
         ), 

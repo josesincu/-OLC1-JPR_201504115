@@ -1,4 +1,5 @@
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Excepcion import Excepcion
 from TS.Tipo import TIPO, OperadorAritmetico
 
@@ -272,4 +273,16 @@ class Aritmetica(Instruccion):
         elif tipo == TIPO.BOOLEANO:
             return bool(val)
         return str(val)
+    
+    def getNodo(self):
+        nodo = NodoAST("ARITMETICA")
+        if self.OperacionDer != None:
+            nodo.agregarHijoNodo(self.OperacionIzq.getNodo())
+            nodo.agregarHijo(str(self.operador))
+            nodo.agregarHijoNodo(self.OperacionDer.getNodo())
+        else:
+            nodo.agregarHijo(str(self.operador))
+            nodo.agregarHijoNodo(self.OperacionIzq.getNodo())
+        
+        return nodo
         

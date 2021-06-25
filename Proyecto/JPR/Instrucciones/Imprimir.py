@@ -1,4 +1,5 @@
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Excepcion import Excepcion
 from TS.Tipo import TIPO
 
@@ -17,3 +18,8 @@ class Imprimir(Instruccion):
             return Excepcion("Semantico", "No se puede imprimir un arreglo completo", self.fila, self.columna)
              
         tree.updateConsola(value)
+    
+    def getNodo(self):
+        nodo = NodoAST("IMPRIMIR")
+        nodo.agregarHijoNodo(self.expresion.getNodo())
+        return nodo

@@ -1,5 +1,6 @@
 from TS.Excepcion import Excepcion
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Simbolo import Simbolo
 from TS.Tipo import TIPO
 
@@ -22,3 +23,9 @@ class Declaracion_sinAsignacion(Instruccion):
         if isinstance(result, Excepcion): 
             return result
         return None
+    
+    def getNodo(self):
+        nodo = NodoAST("DECLARACION_SINAGNACION")
+        nodo.agregarHijo(str(self.tipo))
+        nodo.agregarHijo(str(self.identificador))
+        return nodo

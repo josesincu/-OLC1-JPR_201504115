@@ -1,4 +1,5 @@
 from Abstract.Instruccion import Instruccion
+from Abstract.NodoAST import NodoAST
 from TS.Excepcion import Excepcion
 from TS.Tipo import TIPO
 from TS.TablaSimbolos import TablaSimbolos
@@ -20,8 +21,7 @@ class For(Instruccion):
         nuevaTabla = TablaSimbolos(table)
         self.declaracion.interpretar(tree,nuevaTabla)
         while True:
-            print(self.declaracion)
-           # self.declaracion.interpretar(tree,nuevaTabla)
+            
             estado = self.condicion.interpretar(tree,nuevaTabla)
             if isinstance(estado, Excepcion):
                 return estado
@@ -47,35 +47,15 @@ class For(Instruccion):
                     break
             else:
                 return Excepcion("Semantico", "Tipo de dato no booleano en FOR.", self.fila, self.columna)
-            
+    
+    def getNodo(self):
+        nodo = NodoAST("FOR")
+        nodo.agregarHijoNodo(self.declaracion.getNodo())
+        nodo.agregarHijoNodo(self.condicion.getNodo())
+        nodo.agregarHijoNodo(self.incremento.getNodo())
 
-
-'''
-nuevaTabla = TablaSimbolos(table)
-        while True:
-            
-            self.declaracion.interpretar(tree,nuevaTabla)
-            estado = self.condicion.interpretar(tree,nuevaTabla)
-            if isinstance(estado, Excepcion):
-                return estado
-            if self.condicion.tipo == TIPO.BOOLEANO:
-               
-                if estado == True:
-                    nuevaTabl = TablaSimbolos(table)       #NUEVO ENTORNO
-                    for instruccion in self.instrucciones:
-
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
-                        if isinstance(result, Excepcion) :
-                            tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
-                        if isinstance(result, Break): 
-                            return None
-                        if isinstance(result, Continue):
-                            break
-                    self.incremento.interpretar(tree,nuevaTabla)
-                else:
-                    break
-            else:
-                return Excepcion("Semantico", "Tipo de dato no booleano en FOR.", self.fila, self.columna)
-            
-'''
+        instrucciones = NodoAST("INSTRUCCIONES FOR")
+        for instr in self.instrucciones:
+            instrucciones.agregarHijoNodo(instr.getNodo())
+        nodo.agregarHijoNodo(instrucciones)
+        return nodo
