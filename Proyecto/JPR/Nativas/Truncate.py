@@ -7,6 +7,7 @@ import math #libreria para truncate
 class Truncate(Funcion):
     def __init__(self, nombre, parametros, instrucciones, fila, columna):
         self.nombre = nombre.lower()
+        print(self.nombre)
         self.parametros = parametros
         self.instrucciones = instrucciones
         self.fila = fila

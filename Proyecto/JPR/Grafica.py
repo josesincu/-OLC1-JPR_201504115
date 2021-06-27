@@ -266,7 +266,6 @@ def ejecutar_entrada():
     grafo = ast.getDot(init) #DEVUELVE EL CODIGO GRAPHVIZ DEL AST
 
     dirname = os.path.dirname(__file__)
-    print(dirname)
     direcc = os.path.join(dirname, 'ast.dot')
     arch = open(direcc, "w+")
     arch.write(grafo)

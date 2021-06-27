@@ -29,7 +29,8 @@ reservadas = {
     'null' : 'Rnull',
     'main' : 'Rmain',
     'func' : 'Rfunc',
-    'return': 'Rreturn'
+    'return': 'Rreturn',
+    'read' : 'Rread'
 }
 
 tokens  = [
@@ -230,6 +231,7 @@ from Expresiones.Relacional import Relacional
 from Expresiones.Logica import Logica
 from Expresiones.Identificador import Identificador
 from Expresiones.Casteo import Casteo
+from Expresiones.Read import Read
 
 #___________________________________ REPORTE ______________________________________
 from Reporte.Reporte import reporte
@@ -581,6 +583,10 @@ def p_expresion_llam(t):
 def p_casteo(t):
     ''' expresion : PARA tipo PARC expresion '''
     t[0] = Casteo(t[2],t[4],t.lineno(1), find_column(input, t.slice[1]))
+
+def p_read(t):
+    ''' expresion : Rread PARA PARC'''
+    t[0]=Read(t.lineno(1), find_column(input, t.slice[1]))
 
 
 import ply.yacc as yacc

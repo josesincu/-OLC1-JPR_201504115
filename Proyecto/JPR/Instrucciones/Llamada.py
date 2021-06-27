@@ -12,6 +12,7 @@ from Nativas.Truncate import Truncate
 class Llamada(Instruccion):
     def __init__(self, nombre, parametros, fila, columna):
         self.nombre = nombre.lower()
+        print(self.nombre)
         self.parametros = parametros
         self.fila = fila
         self.columna = columna
@@ -25,6 +26,7 @@ class Llamada(Instruccion):
         if len(result.parametros) == len(self.parametros): #LA CANTIDAD DE PARAMETROS ES LA ADECUADA
             contador=0
 
+            
             for expresion in self.parametros: # SE OBTIENE EL VALOR DEL PARAMETRO EN LA LLAMADA
                 resultExpresion = expresion.interpretar(tree, table)
 
