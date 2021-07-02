@@ -9,6 +9,7 @@ class TIPO(Enum):
     NULO = 6
     ARREGLO = 7
     VAR = 8
+    CUALQUIERA = 9
 
 class OperadorAritmetico(Enum):
     MAS = 1

@@ -1,3 +1,4 @@
+
 from tkinter import *
 from tkinter import messagebox as MessageBox
 from tkinter.ttk import *
@@ -151,17 +152,19 @@ from Instrucciones.Break import Break
 from Instrucciones.Main import Main
 from Instrucciones.Funcion import Funcion
 from Instrucciones.Return import Return
-
 #_______________________ FUNCIONES NATIVAS ______________________________________
 from Nativas.ToUpper import ToUpper
 from Nativas.ToLower import ToLower
 from Nativas.Length import Length
 from Nativas.Truncate import Truncate
 from Nativas.Round import Round
+from Nativas.TypeOf import TypeOf
 #__________________________________ TS ___________________________________________
 from TS.Tipo import TIPO
 #___________________________________ REPORTE ______________________________________
 from Reporte.Reporte import reporte
+#___________________________________ READ _______________________________________
+from Expresiones.Read import Read
 
 def crearNativas(ast):
     #toUpper
@@ -185,7 +188,7 @@ def crearNativas(ast):
     length = Length(nombre, parametros, instrucciones, -1, -1)
     ast.addFuncion(length)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
 
-    #truncate decimal
+    #truncate 
     nombre = "Truncate"
     parametros = [{'tipo':TIPO.DECIMAL,'identificador':'toTruncate##Param1'}]#si queres otro paramteo solo agregar , y otra lista
     instrucciones = []
@@ -198,6 +201,14 @@ def crearNativas(ast):
     instrucciones = []
     roundd = Round(nombre, parametros, instrucciones, -1, -1)
     ast.addFuncion(roundd)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
+    #typeof
+    nombre_t = "TypeOf"
+    parametros_t = [{'tipo':TIPO.CUALQUIERA,'identificador':'toTypeOf##Param1'}]#si queres otro paramteo solo agregar , y otra lista
+    instrucciones_t = []
+    typeOf = TypeOf(nombre_t, parametros_t, instrucciones_t, -1, -1)
+    ast.addFuncion(typeOf)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+
 
 
 def ejecutar_entrada():
@@ -237,7 +248,10 @@ def ejecutar_entrada():
                 ast.getExcepciones().append(err)
                 ast.updateConsola(err.toString())
                 break
+            
             value = instruccion.interpretar(ast,TSGlobal)
+            if isinstance(value,Read):
+                print("Soy read jajaajaj")
             if isinstance(value, Excepcion) :
                 ast.getExcepciones().append(value)
                 ast.updateConsola(value.toString())
@@ -616,7 +630,7 @@ editor.tag_config('buscar', background='#ffff00', font=select_font)
 font_resaltar()
 
 editor.pack(side=LEFT)
-editor.config(width=90, height=25,
+editor.config(width=66, height=25,
              padx=0, pady=0)
 editor.bind("<MouseWheel>",pintar_lineas)
 editor.bind("<Key>",pintar_lineas)
@@ -626,11 +640,20 @@ rightBOTTOM.pack(side=LEFT)
 leftBOTTOM=Frame(cajaInferior)
 leftBOTTOM.pack(side=RIGHT)
 
-consola = Text(leftBOTTOM)
-consola.pack(side=LEFT)
+consola = Text(cajaPrincipal)
+consola.pack(side=RIGHT)
 consola_font = Font(family="Helvetica", size=12, weight="normal" )
-consola.config(width=95,height=11,padx=1, pady=3, font=consola_font, cursor="arrow",borderwidth=7,
+consola.config(width=66,height=25,padx=0.5, pady=0.5, font=consola_font, cursor="arrow",borderwidth=0,
                 selectbackground="black",background="black", foreground="white")
+
+#consola = Text(leftBOTTOM)
+#consola.pack(side=LEFT)
+#consola_font = Font(family="Helvetica", size=12, weight="normal" )
+#consola.config(width=95,height=11,padx=1, pady=3, font=consola_font, cursor="arrow",borderwidth=7,
+#                selectbackground="black",background="black", foreground="white")
+
+
+
 #consola.insert('end','>>JPR-Compiladores1-USAC\n>>')
 #consola.insert('end','>>HOla MUNDO')
 #consola.bind("<Return>",comando_ingresado)
@@ -644,13 +667,17 @@ scroll2.pack(side=RIGHT, fill=Y)
 #-------------DEBUGER--------------------
 #-------------------------------------------
 
-debugger =Treeview(leftBOTTOM)
-debugger["columns"]=("valor")
-debugger.column("#0", width=70, minwidth=30)
-debugger.column("valor", width=140, minwidth=60)
+columnas = ('#1','#2','#3','#4','#5','#6','#7')
+debugger =Treeview(leftBOTTOM,columns=columnas, show='headings')
 
-debugger.heading("#0", text="ID",anchor=W)
-debugger.heading("valor", text="Valor",anchor=W)
+debugger.heading('#1', text="Identificador",anchor=W)
+debugger.heading("#2", text="Tipo",anchor=W)
+debugger.heading("#3", text="Tipo",anchor=W)
+debugger.heading("#4", text="Entorno",anchor=W)
+debugger.heading("#5", text="Valor",anchor=W)
+debugger.heading("#6", text="Linea",anchor=W)
+debugger.heading("#7", text="Columna",anchor=W)
+
 debugger.pack(side=TOP,fill=Y)
 
 #-------------SCROLL--------------------
@@ -658,6 +685,7 @@ scroll = Scrollbar(cajaPrincipal, orient=VERTICAL ,command=multiple_yview)
 FrameLines.configure(yscrollcommand=scroll.set)
 scroll.pack(side=RIGHT, fill=Y)
 
-
+root.geometry("1212x600")
+root.resizable(width=False, height=False)
 root.mainloop()
 

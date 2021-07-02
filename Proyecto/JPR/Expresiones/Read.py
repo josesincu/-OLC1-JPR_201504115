@@ -1,6 +1,7 @@
 from Abstract.NodoAST import NodoAST
 from Abstract.Instruccion import Instruccion
 from TS.Excepcion import Excepcion
+from TS.Tipo import TIPO
 
 #___________________ IMPORT DIALOG PARA READ _________________________
 from tkinter import simpledialog

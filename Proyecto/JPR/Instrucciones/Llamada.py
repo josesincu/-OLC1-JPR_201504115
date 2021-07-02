@@ -12,7 +12,6 @@ from Nativas.Truncate import Truncate
 class Llamada(Instruccion):
     def __init__(self, nombre, parametros, fila, columna):
         self.nombre = nombre.lower()
-        print(self.nombre)
         self.parametros = parametros
         self.fila = fila
         self.columna = columna
@@ -31,6 +30,33 @@ class Llamada(Instruccion):
                 resultExpresion = expresion.interpretar(tree, table)
 
                 if isinstance(resultExpresion, Excepcion): return resultExpresion
+                
+                #________________trucate________________________________________
+                if result.nombre == "truncate":
+                    #creacion simbolo
+                    simbolo = Simbolo(str(result.parametros[contador]['identificador']).lower(),expresion.tipo, self.fila, self.columna, resultExpresion)
+                    resultTabla = nuevaTabla.setTabla(simbolo)
+                    if isinstance(resultTabla, Excepcion): 
+                        return resultTabla
+                    break
+                #_________________round____________________________________________
+                if result.nombre == "round":
+                    #creacion simbolo
+                    simbolo = Simbolo(str(result.parametros[contador]['identificador']).lower(),expresion.tipo, self.fila, self.columna, resultExpresion)
+                    resultTabla = nuevaTabla.setTabla(simbolo)
+                    if isinstance(resultTabla, Excepcion): 
+                        return resultTabla
+                    break
+                
+                #_________________typeof____________________________________________
+                if result.nombre == "typeof":
+                    #creacion simbolo
+                    simbolo = Simbolo(str(result.parametros[contador]['identificador']).lower(),expresion.tipo, self.fila, self.columna, resultExpresion)
+                    resultTabla = nuevaTabla.setTabla(simbolo)
+                    if isinstance(resultTabla, Excepcion): 
+                        return resultTabla
+                    break
+
 
                 if result.parametros[contador]["tipo"] == expresion.tipo:  # VERIFICACION DE TIPO
                     # CREACION DE SIMBOLO E INGRESARLO A LA TABLA DE SIMBOLOS
