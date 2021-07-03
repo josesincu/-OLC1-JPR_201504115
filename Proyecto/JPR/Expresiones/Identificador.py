@@ -10,7 +10,7 @@ class Identificador(Instruccion):
         self.columna = columna
         self.tipo = None
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         simbolo = table.getTabla(self.identificador)
         if simbolo == None:
             return Excepcion("Semantico", "Variable " + self.identificador + " no encontrada.", self.fila, self.columna)

@@ -12,8 +12,8 @@ class Return(Instruccion):
         self.tipo = None
         self.result = None
 
-    def interpretar(self, tree, table):
-        result = self.expresion.interpretar(tree, table)
+    def interpretar(self, tree, table,jconsola):
+        result = self.expresion.interpretar(tree, table,jconsola)
         if isinstance(result, Excepcion): return result
 
         self.tipo = self.expresion.tipo #TIPO DEL RESULT

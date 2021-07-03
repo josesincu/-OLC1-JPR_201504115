@@ -12,8 +12,8 @@ class Asignacion(Instruccion):
         self.columna = columna
         
 
-    def interpretar(self, tree, table):
-        value = self.expresion.interpretar(tree, table) # Valor a asignar a la variable
+    def interpretar(self, tree, table,jconsola):
+        value = self.expresion.interpretar(tree, table,jconsola) # Valor a asignar a la variable
         if isinstance(value, Excepcion): return value
 
         simbolo = Simbolo(self.identificador, self.expresion.tipo, self.fila, self.columna, value)

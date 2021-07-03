@@ -223,21 +223,27 @@ def ejecutar_entrada():
     
     for error in getErrores():                   # CAPTURA DE ERRORES LEXICOS Y SINTACTICOS
         ast.getExcepciones().append(error)
-        ast.updateConsola(error.toString())
+        #ast.updateConsola(error.toString())
+        consola.insert('insert',">>"+error.toString()+"\n")
 
     for instruccion in ast.getInstrucciones():      # 1ERA PASADA (DECLARACIONES Y ASIGNACIONES)
         
         if isinstance(instruccion, Funcion):
             ast.addFuncion(instruccion)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
+            #ast.addSim_Tabla((instruccion.nombre,"Funcion","----","Global",'----',instruccion.fila,instruccion.columna))
         if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion):
-            value = instruccion.interpretar(ast,TSGlobal)
+            #if isinstance(instruccion,Declaracion):
+            #   ast.addSim_Tabla((instruccion.identificador,"Variable","----","Global",instruccion.expresion,instruccion.fila,instruccion.columna))
+            value = instruccion.interpretar(ast,TSGlobal,consola)
             if isinstance(value, Excepcion) :
                 ast.getExcepciones().append(value)
-                ast.updateConsola(value.toString())
+                #ast.updateConsola(value.toString())
+                consola.insert('insert',">>"+value.toString()+"\n")
             if isinstance(value, Break): 
                 err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
                 ast.getExcepciones().append(err)
-                ast.updateConsola(err.toString())
+                #ast.updateConsola(err.toString())
+                consola.insert('insert',">>"+err.toString()+"\n")
         
     for instruccion in ast.getInstrucciones():      # 2DA PASADA (MAIN)
         contador = 0
@@ -246,30 +252,35 @@ def ejecutar_entrada():
             if contador == 2: # VERIFICAR LA DUPLICIDAD
                 err = Excepcion("Semantico", "Existen 2 funciones Main", instruccion.fila, instruccion.columna)
                 ast.getExcepciones().append(err)
-                ast.updateConsola(err.toString())
+                #ast.updateConsola(err.toString())
+                consola.insert('insert',">>"+err.toString()+"\n")
                 break
+
             
-            value = instruccion.interpretar(ast,TSGlobal)
-            if isinstance(value,Read):
-                print("Soy read jajaajaj")
+            value = instruccion.interpretar(ast,TSGlobal,consola)
+            
             if isinstance(value, Excepcion) :
                 ast.getExcepciones().append(value)
-                ast.updateConsola(value.toString())
+                #ast.updateConsola(value.toString())
+                consola.insert('insert',">>"+value.toString()+"\n")
             if isinstance(value, Break): 
                 err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
                 ast.getExcepciones().append(err)
-                ast.updateConsola(err.toString())
+                #ast.updateConsola(err.toString())
+                consola.insert('insert',">>"+err.toString()+"\n")
             if isinstance(value,Return):
                 err = Excepcion("Semantico", "Sentencia Return fuera de funcion o ciclo", instruccion.fila, instruccion.columna)
                 ast.getExcepciones().append(err)
-                ast.updateConsola(err.toString())
+                #ast.updateConsola(err.toString())
+                consola.insert('insert',">>"+err.toString()+"\n")
 
         
     for instruccion in ast.getInstrucciones():    # 3ERA PASADA (SENTENCIAS FUERA DE MAIN)
         if not (isinstance(instruccion, Main) or isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion, Funcion) or isinstance(instruccion,Declaracion_sinAsignacion)):
             err = Excepcion("Semantico", "Sentencias fuera de Main", instruccion.fila, instruccion.columna)
             ast.getExcepciones().append(err)
-            ast.updateConsola(err.toString())
+            #ast.updateConsola(err.toString())
+            consola.insert('insert',">>"+err.toString()+"\n")
     init = NodoAST("RAIZ")
     instr = NodoAST("INSTRUCCIONES")
 
@@ -288,7 +299,9 @@ def ejecutar_entrada():
 
     #_________________________________________________
     reporte(nombreFile,ast.getExcepciones())
-    consola.insert('insert',ast.getConsola())
+    #consola.insert('insert',ast.getConsola())
+    for contact in ast.getSim_Tabla():
+        debugger.insert('',END, values=contact)
     
 
 
@@ -641,18 +654,10 @@ leftBOTTOM=Frame(cajaInferior)
 leftBOTTOM.pack(side=RIGHT)
 
 consola = Text(cajaPrincipal)
-consola.pack(side=RIGHT)
+
 consola_font = Font(family="Helvetica", size=12, weight="normal" )
 consola.config(width=66,height=25,padx=0.5, pady=0.5, font=consola_font, cursor="arrow",borderwidth=0,
                 selectbackground="black",background="black", foreground="white")
-
-#consola = Text(leftBOTTOM)
-#consola.pack(side=LEFT)
-#consola_font = Font(family="Helvetica", size=12, weight="normal" )
-#consola.config(width=95,height=11,padx=1, pady=3, font=consola_font, cursor="arrow",borderwidth=7,
-#                selectbackground="black",background="black", foreground="white")
-
-
 
 #consola.insert('end','>>JPR-Compiladores1-USAC\n>>')
 #consola.insert('end','>>HOla MUNDO')
@@ -660,11 +665,13 @@ consola.config(width=66,height=25,padx=0.5, pady=0.5, font=consola_font, cursor=
 consola.bind("<Key>",agregarSalto)
 consola.config(insertbackground="white")
 
-scroll2 = Scrollbar(leftBOTTOM, orient=VERTICAL)
+scroll2 = Scrollbar(cajaPrincipal, orient=VERTICAL)
 consola.configure(yscrollcommand = scroll2.set)
 scroll2.config( command = consola.yview ) 
 scroll2.pack(side=RIGHT, fill=Y)
-#-------------DEBUGER--------------------
+consola.pack(side=RIGHT)
+
+#s-------------DEBUGER--------------------
 #-------------------------------------------
 
 columnas = ('#1','#2','#3','#4','#5','#6','#7')
@@ -678,7 +685,14 @@ debugger.heading("#5", text="Valor",anchor=W)
 debugger.heading("#6", text="Linea",anchor=W)
 debugger.heading("#7", text="Columna",anchor=W)
 
+scroll3 = Scrollbar(leftBOTTOM, orient=VERTICAL)
+debugger.configure(yscrollcommand = scroll3.set)
+scroll3.config( command = debugger.yview ) 
+scroll3.pack(side=RIGHT, fill=Y)
+
+
 debugger.pack(side=TOP,fill=Y)
+
 
 #-------------SCROLL--------------------
 scroll = Scrollbar(cajaPrincipal, orient=VERTICAL ,command=multiple_yview)

@@ -19,14 +19,14 @@ class DeclaracionArreglo(Instruccion):
         self.arreglo = True
 
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         if self.tipo != self.tipo2:                     #VERIFICACION DE TIPOS
             return Excepcion("Semantico", "Tipo de dato diferente en Arreglo.", self.fila, self.columna)
         if self.dimensiones != len(self.expresiones):   #VERIFICACION DE DIMENSIONES
             return Excepcion("Semantico", "Dimensiones diferentes en Arreglo.", self.fila, self.columna)
 
         # CREACION DEL ARREGLO
-        value = self.crearDimensiones(tree, table, copy.copy(self.expresiones))     #RETORNA EL ARREGLO DE DIMENSIONES
+        value = self.crearDimensiones(tree, table, copy.copy(self.expresiones),jconsola)     #RETORNA EL ARREGLO DE DIMENSIONES
         if isinstance(value, Excepcion): return value
         simbolo = Simbolo(str(self.identificador).lower(), self.tipo, self.arreglo, self.fila, self.columna, value)
         result = table.setTabla(simbolo)
@@ -45,12 +45,12 @@ class DeclaracionArreglo(Instruccion):
         nodo.agregarHijoNodo(exp)
         return nodo
 
-    def crearDimensiones(self, tree, table, expresiones):
+    def crearDimensiones(self, tree, table, expresiones,jconsola):
         arr = []
         if len(expresiones) == 0:
             return None
         dimension = expresiones.pop(0)
-        num = dimension.interpretar(tree, table)
+        num = dimension.interpretar(tree, table,jconsola)
         if isinstance(num, Excepcion): return num
         if dimension.tipo != TIPO.ENTERO:
             return Excepcion("Semantico", "Expresion diferente a ENTERO en Arreglo.", self.fila, self.columna)

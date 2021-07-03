@@ -11,8 +11,8 @@ class Casteo(Instruccion):
         self.tipo = tipo
 
     
-    def interpretar(self, tree, table):
-        val = self.expresion.interpretar(tree, table)
+    def interpretar(self, tree, table,jconsola):
+        val = self.expresion.interpretar(tree, table,jconsola)
         if self.tipo == TIPO.DECIMAL:
             if self.expresion.tipo == TIPO.ENTERO:
                 try:
@@ -72,7 +72,9 @@ class Casteo(Instruccion):
         if self.tipo == TIPO.BOOLEANO:
             if self.expresion.tipo == TIPO.CADENA:
                 try:
-                    return bool(self.obtenerVal(self.expresion.tipo, val))
+                    if self.obtenerVal(self.expresion.tipo, val).lower() == "true":
+                        return True
+                    return False
                 except:
                     return Excepcion("Semantico", "No se puede castear para booleano. en decimal", self.fila, self.columna)
             return Excepcion("Semantico", "Tipo Erroneo de casteo para Caracter.", self.fila, self.columna)
@@ -92,5 +94,7 @@ class Casteo(Instruccion):
         elif tipo == TIPO.DECIMAL:
             return float(val)
         elif tipo == TIPO.BOOLEANO:
-            return bool(val)
+            if val.lower() == 'true':
+                return True
+            return False
         return str(val)

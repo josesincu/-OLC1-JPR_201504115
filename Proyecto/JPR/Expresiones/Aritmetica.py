@@ -13,11 +13,11 @@ class Aritmetica(Instruccion):
         self.tipo = None
 
     
-    def interpretar(self, tree, table):
-        izq = self.OperacionIzq.interpretar(tree, table)
+    def interpretar(self, tree, table,jconsola):
+        izq = self.OperacionIzq.interpretar(tree, table,jconsola)
         if isinstance(izq, Excepcion): return izq
         if self.OperacionDer != None:
-            der = self.OperacionDer.interpretar(tree, table)
+            der = self.OperacionDer.interpretar(tree, table,jconsola)
             if isinstance(der, Excepcion): return der
 
 
@@ -271,6 +271,8 @@ class Aritmetica(Instruccion):
         elif tipo == TIPO.DECIMAL:
             return float(val)
         elif tipo == TIPO.BOOLEANO:
+            
+                
             return bool(val)
         return str(val)
     

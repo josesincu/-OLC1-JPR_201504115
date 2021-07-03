@@ -13,11 +13,11 @@ class Logica(Instruccion):
         self.tipo = TIPO.BOOLEANO
 
     
-    def interpretar(self, tree, table):
-        izq = self.OperacionIzq.interpretar(tree, table)
+    def interpretar(self, tree, table,jconsola):
+        izq = self.OperacionIzq.interpretar(tree, table,jconsola)
         if isinstance(izq, Excepcion): return izq
         if self.OperacionDer != None:
-            der = self.OperacionDer.interpretar(tree, table)
+            der = self.OperacionDer.interpretar(tree, table,jconsola)
             if isinstance(der, Excepcion): return der
 
         if self.operador == OperadorLogico.AND:

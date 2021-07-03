@@ -12,15 +12,10 @@ class Read(Instruccion):
         self.columna = columna
         self.tipo = TIPO.CADENA
 
-    def interpretar(self, tree, table):
-        #print(tree.getConsola()) #IMPRIME LA CONSOLA
-        #print("Ingreso a un READ. Ingrese el valor")
-        #tree.setConsola("")     #RESETEA LA CONSOLA
-        # ESTO SOLO ES DE EJEMPLO
-        #lectura = input() # OBTENERME EL VALOR INGRESADO
-        #return lectura
-        lectura = simpledialog.askstring("Input", "Ingresa el valor que se te pide en consola")
+    def interpretar(self, tree, table,jconsola):
+        lectura = simpledialog.askstring("Input", "Ver consola")
         if lectura is not None:
+            jconsola.insert('insert',">>"+str(lectura)+"\n")
             return lectura 
         else:
             return Excepcion("Semantico", "Valor no Aceptable en read.", self.fila, self.columna)

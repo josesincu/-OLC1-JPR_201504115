@@ -30,7 +30,9 @@ reservadas = {
     'main' : 'Rmain',
     'func' : 'Rfunc',
     'return': 'Rreturn',
-    'read' : 'Rread'
+    'read' : 'Rread',
+    'true' : 'Rtrue',
+    'false': 'Rfalse'
 }
 
 tokens  = [
@@ -58,8 +60,6 @@ tokens  = [
     'DECIMAL',
     'ENTERO',
     'CADENA',
-    'TRUE',
-    'FALSE',
     'IGUAL',
     'CARACTER',
     'ID',
@@ -111,24 +111,6 @@ def t_ENTERO(t):
     except ValueError:
         print("Integer value too large %d", t.value)
         t.value = 0
-    return t
-
-def t_TRUE(t):
-    r'true'
-    try:
-        t.value = True
-    except ValueError:
-        print('Error no se puede convertir a booleano esto %d',t.value)
-        t.value = None
-    return t
-
-def t_FALSE(t):
-    r'false'
-    try:
-        t.value = False
-    except ValueError:
-        print('Error no se puede convertir a booleano esto %d',t.value)
-        t.value = None
     return t
 
 def t_ID(t):
@@ -558,12 +540,12 @@ def p_primitivo_cadena(t):
     t[0] = Primitivos(TIPO.CADENA,str(t[1]).replace('\\n', '\n'), t.lineno(1), find_column(input, t.slice[1]))
 
 def p_primitivo_true(t):
-    '''expresion : TRUE'''
-    t[0] = Primitivos(TIPO.BOOLEANO,t[1],t.lineno(1), find_column(input, t.slice[1]))
+    '''expresion : Rtrue'''
+    t[0] = Primitivos(TIPO.BOOLEANO,True,t.lineno(1), find_column(input, t.slice[1]))
 
 def p_primitivo_false(t):
-    '''expresion : FALSE'''
-    t[0] = Primitivos(TIPO.BOOLEANO,t[1],t.lineno(1), find_column(input, t.slice[1]))
+    '''expresion : Rfalse'''
+    t[0] = Primitivos(TIPO.BOOLEANO,False,t.lineno(1), find_column(input, t.slice[1]))
 
 def p_primitivo_caracter(t):
     '''expresion : CARACTER'''

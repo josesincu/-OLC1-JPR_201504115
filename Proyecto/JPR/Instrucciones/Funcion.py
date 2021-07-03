@@ -17,17 +17,19 @@ class Funcion(Instruccion):
         self.columna = columna
         self.tipo = TIPO.NULO
     
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         nuevaTabla = TablaSimbolos(table) 
         for instruccion in self.instrucciones:      # REALIZAR LAS ACCIONES
-            value = instruccion.interpretar(tree,nuevaTabla)
+            value = instruccion.interpretar(tree,nuevaTabla,jconsola)
             if isinstance(value, Excepcion) :
                 tree.getExcepciones().append(value)
-                tree.updateConsola(value.toString())
+                #tree.updateConsola(value.toString())
+                jconsola.insert('insert',">>"+value.toString()+"\n")
             if isinstance(value, Break): 
                 err = Excepcion("Semantico", "Sentencia BREAK fuera de ciclo", instruccion.fila, instruccion.columna)
                 tree.getExcepciones().append(err)
-                tree.updateConsola(err.toString())
+                #tree.updateConsola(err.toString())
+                jconsola.insert('insert',">>"+err.toString()+"\n")
             if isinstance(value, Return):
                 self.tipo = value.tipo
                 return value.result

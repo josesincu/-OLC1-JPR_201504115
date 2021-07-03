@@ -12,7 +12,7 @@ class ToUpper(Funcion):
         self.columna = columna
         self.tipo = TIPO.NULO
     
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         simbolo = table.getTabla(("toUpper##Param1").lower())
         
         if simbolo == None : return Excepcion("Semantico", "No se encontró el parámetro de ToUpper", self.fila, self.columna)

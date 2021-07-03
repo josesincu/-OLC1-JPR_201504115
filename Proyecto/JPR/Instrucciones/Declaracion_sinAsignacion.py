@@ -13,7 +13,7 @@ class Declaracion_sinAsignacion(Instruccion):
         self.columna = columna
         
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         if self.tipo == TIPO.VAR:
             self.tipo = TIPO.NULO
         simbolo = Simbolo(str(self.identificador), self.tipo, self.fila, self.columna,None)

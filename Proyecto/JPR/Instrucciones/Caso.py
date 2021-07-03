@@ -12,7 +12,7 @@ class Caso(Instruccion):
         self.fila = fila
         self.columna = columna
     
-    def interpretar(self,tree,table):
+    def interpretar(self,tree,table,jconsola):
         return self
 
     def getNodo(self):

@@ -16,13 +16,13 @@ class For(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         #self.declaracion.interpretar(tree,table) #NUEVO ENTORNO
         nuevaTabla = TablaSimbolos(table)
-        self.declaracion.interpretar(tree,nuevaTabla)
+        self.declaracion.interpretar(tree,nuevaTabla,jconsola)
         while True:
             
-            estado = self.condicion.interpretar(tree,nuevaTabla)
+            estado = self.condicion.interpretar(tree,nuevaTabla,jconsola)
             if isinstance(estado, Excepcion):
                 return estado
             if self.condicion.tipo == TIPO.BOOLEANO:
@@ -31,10 +31,11 @@ class For(Instruccion):
                     nuevaTabl = TablaSimbolos(nuevaTabla)       #NUEVO ENTORNO
                     for instruccion in self.instrucciones:
 
-                        result = instruccion.interpretar(tree, nuevaTabl) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabl,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break): 
                             return None
                         if isinstance(result, Continue):
@@ -42,7 +43,7 @@ class For(Instruccion):
                         if isinstance(result,Return):
                             return result
 
-                    self.incremento.interpretar(tree,nuevaTabl)
+                    self.incremento.interpretar(tree,nuevaTabl,jconsola)
                 else:
                     break
             else:

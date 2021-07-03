@@ -12,7 +12,7 @@ class TypeOf(Funcion):
         self.columna = columna
         self.tipo = TIPO.NULO
     
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         simbolo = table.getTabla(("totypeof##Param1").lower())
         cadena = ""
         if simbolo == None : 

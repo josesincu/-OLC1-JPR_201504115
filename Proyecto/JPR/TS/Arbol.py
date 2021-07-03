@@ -3,6 +3,7 @@ class Arbol:
         self.instrucciones = instrucciones
         self.funciones = []
         self.excepciones = []
+        self.tabla_reporte = []
         self.consola = ""
         self.TSglobal = None
         self.dot = ""
@@ -48,6 +49,11 @@ class Arbol:
     def addFuncion(self, funcion):
         self.funciones.append(funcion)
     
+    def addSim_Tabla(self,agregarInf):
+        self.tabla_reporte.append(agregarInf)
+    
+    def getSim_Tabla(self):
+        return self.tabla_reporte
 
     def getDot(self, raiz): ## DEVUELVE EL STRING DE LA GRAFICA EN GRAPHVIZ
         self.dot = ""

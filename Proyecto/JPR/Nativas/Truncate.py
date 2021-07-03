@@ -13,7 +13,7 @@ class Truncate(Funcion):
         self.columna = columna
         self.tipo = TIPO.NULO
     
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         simbolo = table.getTabla(("toTruncate##Param1").lower())
         if simbolo == None : return Excepcion("Semantico", "No se encontró el parámetro de truncate", self.fila, self.columna)
 

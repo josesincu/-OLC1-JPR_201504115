@@ -12,7 +12,7 @@ class Incremento(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         temp_simbolo = table.getTabla(self.identificador)
         
         if self.tipo_aumento == OperadorIncremento.MASMAS:

@@ -7,7 +7,7 @@ class Instruccion(ABC):
         super().__init__()
 
     @abstractmethod
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         pass
 
     @abstractmethod

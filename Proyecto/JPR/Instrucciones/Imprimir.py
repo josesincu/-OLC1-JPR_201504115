@@ -9,15 +9,16 @@ class Imprimir(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
-        value = self.expresion.interpretar(tree, table)  # RETORNA CUALQUIER VALOR
+    def interpretar(self, tree, table,jconsola):
+        value = self.expresion.interpretar(tree, table,jconsola)  # RETORNA CUALQUIER VALOR
         if isinstance(value, Excepcion) :
             return value
         
         if self.expresion.tipo == TIPO.ARREGLO:
             return Excepcion("Semantico", "No se puede imprimir un arreglo completo", self.fila, self.columna)
-             
-        tree.updateConsola(value)
+        
+        jconsola.insert('insert',">>"+str(value)+"\n")
+        #tree.updateConsola(value)
     
     def getNodo(self):
         nodo = NodoAST("IMPRIMIR")

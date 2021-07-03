@@ -17,18 +17,19 @@ class If(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
-        condicion = self.condicion.interpretar(tree, table)
+    def interpretar(self, tree, table,jconsola):
+        condicion = self.condicion.interpretar(tree, table,jconsola)
         if isinstance(condicion, Excepcion): return condicion
 
         if self.condicion.tipo == TIPO.BOOLEANO:
             if bool(condicion) == True:   # VERIFICA SI ES VERDADERA LA CONDICION
                 nuevaTabla = TablaSimbolos(table)       #NUEVO ENTORNO
                 for instruccion in self.instruccionesIf:
-                    result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                    result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                     if isinstance(result, Excepcion) :
                         tree.getExcepciones().append(result)
-                        tree.updateConsola(result.toString())
+                        #tree.updateConsola(result.toString())
+                        jconsola.insert('insert',">>"+result.toString()+"\n")
                     if isinstance(result, Break): 
                         return result
                     if isinstance(result,Continue):
@@ -42,10 +43,11 @@ class If(Instruccion):
                 if self.instruccionesElse != None:
                     nuevaTabla = TablaSimbolos(table)       #NUEVO ENTORNO
                     for instruccion in self.instruccionesElse:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString()) 
+                            #tree.updateConsola(result.toString()) 
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break): 
                             return result
                         if isinstance(result,Continue):
@@ -53,7 +55,7 @@ class If(Instruccion):
                         if isinstance(result,Return):
                             return result
                 elif self.elseIf != None:
-                    result = self.elseIf.interpretar(tree, table)
+                    result = self.elseIf.interpretar(tree, table,jconsola)
                     if isinstance(result, Excepcion): 
                         return result
                     if isinstance(result, Break): 

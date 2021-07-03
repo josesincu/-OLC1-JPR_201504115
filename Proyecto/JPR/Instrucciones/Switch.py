@@ -16,8 +16,8 @@ class Switch(Instruccion):
         self.fila = fila
         self.columna = columna
     
-    def interpretar(self,tree,table): 
-        self.expresion.interpretar(tree,table)
+    def interpretar(self,tree,table,jconsola): 
+        self.expresion.interpretar(tree,table,jconsola)
         
         hayBreak = False
         ejecutado = False
@@ -28,20 +28,21 @@ class Switch(Instruccion):
             if self.expresion.tipo == TIPO.ENTERO and self.listaCaso[x].expresion.tipo == TIPO.ENTERO :
                 #__________________________entero == entero && entero == entero
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -52,19 +53,20 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.ENTERO and self.listaCaso[x].expresion.tipo == TIPO.DECIMAL :
                 #__________________________entero == entero && decimal == decimal
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == float(valor_caso):
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -75,19 +77,20 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.ENTERO and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________entero == entero && cadeba == cadena
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -98,19 +101,20 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.ENTERO :
                 #__________________________ decimal == decimal && entero == entero
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == float(valor_caso):
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -121,20 +125,22 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.DECIMAL :
                 #__________________________ decimal == decimal && decimal == decimal
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     ejecutado = True
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
+
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -145,19 +151,20 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.DECIMAL and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________ decimal == decimal && cadena == cadena
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -169,19 +176,20 @@ class Switch(Instruccion):
                 #__________________________ boleano == boleano && boleano == boleano
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -193,19 +201,20 @@ class Switch(Instruccion):
                 #__________________________ boleano == boleano && cadena == cadena
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -217,19 +226,20 @@ class Switch(Instruccion):
                 #__________________________ caracter == caracter && caracter == caracter
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -241,19 +251,20 @@ class Switch(Instruccion):
                 #__________________________ cadena == cadena && int == int
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -265,19 +276,20 @@ class Switch(Instruccion):
                 #__________________________ cadena == cadena && decimal == decimal
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -289,19 +301,20 @@ class Switch(Instruccion):
                 #__________________________ cadena == cadena && booleano == boleano
                 
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -312,19 +325,20 @@ class Switch(Instruccion):
             elif self.expresion.tipo == TIPO.CADENA and self.listaCaso[x].expresion.tipo == TIPO.CADENA :
                 #__________________________ cadena == cadena && cadena == cadena
                 
-                valor_expresion = self.expresion.interpretar(tree,table)
+                valor_expresion = self.expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_expresion,Excepcion):
                     return valor_expresion
-                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table)
+                valor_caso = self.listaCaso[x].expresion.interpretar(tree,table,jconsola)
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     nuevaTabla = TablaSimbolos(table)
                     for instruccion in self.listaCaso[x].instrucciones:
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break):
                             hayBreak = True
                             ejecutado = True
@@ -345,10 +359,11 @@ class Switch(Instruccion):
         if ejecutado == False and self.casoDefault != None:
             nuevaTabla = TablaSimbolos(table)
             for instruccion in self.casoDefault:
-                result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                 if isinstance(result, Excepcion) :
                     tree.getExcepciones().append(result)
-                    tree.updateConsola(result.toString())
+                    #tree.updateConsola(result.toString())
+                    jconsola.insert('insert',">>"+result.toString()+"\n")
                 if isinstance(result, Break):
                     hayBreak = True
                     ejecutado = True

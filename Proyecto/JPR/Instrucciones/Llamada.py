@@ -16,7 +16,7 @@ class Llamada(Instruccion):
         self.fila = fila
         self.columna = columna
     
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         result = tree.getFuncion(self.nombre) ## OBTENER LA FUNCION
         if result == None: # NO SE ENCONTRO LA FUNCION
             return Excepcion("Semantico", "NO SE ENCONTRO LA FUNCION: " + self.nombre, self.fila, self.columna)
@@ -27,7 +27,7 @@ class Llamada(Instruccion):
 
             
             for expresion in self.parametros: # SE OBTIENE EL VALOR DEL PARAMETRO EN LA LLAMADA
-                resultExpresion = expresion.interpretar(tree, table)
+                resultExpresion = expresion.interpretar(tree, table,jconsola)
 
                 if isinstance(resultExpresion, Excepcion): return resultExpresion
                 
@@ -72,7 +72,7 @@ class Llamada(Instruccion):
         else: 
             return Excepcion("Semantico", "Cantidad de Parametros incorrecta.", self.fila, self.columna)
         
-        value = result.interpretar(tree, nuevaTabla)         # INTERPRETAR EL NODO FUNCION
+        value = result.interpretar(tree, nuevaTabla,jconsola)         # INTERPRETAR EL NODO FUNCION
         
         if isinstance(value, Excepcion): return value
         self.tipo = result.tipo

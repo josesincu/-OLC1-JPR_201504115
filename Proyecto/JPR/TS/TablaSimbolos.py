@@ -4,9 +4,10 @@ from TS.Tipo import TIPO
 
 
 class TablaSimbolos:
-    def __init__(self, anterior = None):
+    def __init__(self, anterior = None,nombre = None):
         self.tabla = {} # Diccionario Vacio
         self.anterior = anterior
+        self.nombre_Ent = nombre
         
 
     def setTabla(self, simbolo):      # Agregar una variable
@@ -51,6 +52,6 @@ class TablaSimbolos:
             else:
                 tablaActual = tablaActual.anterior
         return Excepcion("Semantico", "Variable No encontrada en Asignacion", simbolo.getFila(), simbolo.getColumna())
-        
-        
-    
+
+    def getNombre_Ambito(self):
+        return self.nombre_Ent

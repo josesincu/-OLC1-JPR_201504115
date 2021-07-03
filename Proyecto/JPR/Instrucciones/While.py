@@ -14,9 +14,9 @@ class While(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
         while True:
-            condicion = self.condicion.interpretar(tree, table)
+            condicion = self.condicion.interpretar(tree, table,jconsola)
             if isinstance(condicion, Excepcion): return condicion
 
             if self.condicion.tipo == TIPO.BOOLEANO:
@@ -24,10 +24,11 @@ class While(Instruccion):
                     nuevaTabla = TablaSimbolos(table)       #NUEVO ENTORNO
                     for instruccion in self.instrucciones:
                         
-                        result = instruccion.interpretar(tree, nuevaTabla) #EJECUTA INSTRUCCION ADENTRO DEL IF
+                        result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
                             tree.getExcepciones().append(result)
-                            tree.updateConsola(result.toString())
+                            #tree.updateConsola(result.toString())
+                            jconsola.insert('insert',">>"+result.toString()+"\n")
                         if isinstance(result, Break): 
                             return None
                         if isinstance(result,Continue):

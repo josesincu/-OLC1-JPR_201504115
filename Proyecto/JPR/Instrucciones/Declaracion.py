@@ -13,11 +13,12 @@ class Declaracion(Instruccion):
         self.fila = fila
         self.columna = columna
 
-    def interpretar(self, tree, table):
+    def interpretar(self, tree, table,jconsola):
+        
         if self.tipo == TIPO.VAR:
             self.tipo = TIPO.NULO
         
-        value = self.expresion.interpretar(tree, table) # Valor a asignar a la variable
+        value = self.expresion.interpretar(tree, table,jconsola) # Valor a asignar a la variable
         if isinstance(value, Excepcion): 
             return value
 
