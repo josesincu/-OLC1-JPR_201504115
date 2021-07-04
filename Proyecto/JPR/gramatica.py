@@ -5,8 +5,12 @@ Jose Castro Sincu
 VACACIONES DE JUNIO 2020
 -------------------------------
 '''
+from Instrucciones.DeclaracionArreglo2 import DeclaracionArreglo2
 import re
 from TS.Excepcion import Excepcion
+import sys
+
+sys.setrecursionlimit(3000)
 #______________________________________ LEXICO ___________________________
 errores = []
 reservadas = {
@@ -32,7 +36,8 @@ reservadas = {
     'return': 'Rreturn',
     'read' : 'Rread',
     'true' : 'Rtrue',
-    'false': 'Rfalse'
+    'false': 'Rfalse',
+    'new' :'Rnew'
 }
 
 tokens  = [
@@ -65,7 +70,9 @@ tokens  = [
     'ID',
     'MASMAS',
     'MENOSMENOS',
-    'DOSPUNTO'
+    'DOSPUNTO',
+    'CORA',
+    'CORC'
 ] + list(reservadas.values())
 
 # Tokens
@@ -94,13 +101,14 @@ t_MASMAS        = r'\+\+'
 t_MENOSMENOS    = r'--'
 t_DOSPUNTO     = r':'
 t_COMA         = r','
+t_CORA         = r'\['
+t_CORC         = r'\]'
 
 def t_DECIMAL(t):
     r'\d+\.\d+'
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Double value too large %d", t.value)
         t.value = 0
     return t
 
@@ -109,7 +117,6 @@ def t_ENTERO(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Integer value too large %d", t.value)
         t.value = 0
     return t
 
@@ -131,7 +138,7 @@ def t_CARACTER(t):
 #COMENTARIO MULTIPLE
 def t_COMENTARIO_MULTIPLE(t):
     r'\#\*(.|\n)*?\*\#'
-    t.lineno += t.value.count('\n')
+    t.lexer.lineno += t.value.count('\n')
     
 # Comentario simple // ...
 def t_COMENTARIO_SIMPLE(t):
@@ -201,7 +208,8 @@ from Instrucciones.Main import Main
 from Instrucciones.Funcion import Funcion
 from Instrucciones.Return import Return
 from Instrucciones.Llamada import Llamada
-
+from Instrucciones.DeclaracionArreglo import DeclaracionArreglo
+from Instrucciones.ModificarArreglo import ModificarArreglo
 
 #________________________________ OPERADORES Y TABLA SE SIMBOLO ___________________
 from TS.Tipo import OperadorAritmetico, TIPO,OperadorRelacional,OperadorLogico,OperadorIncremento
@@ -214,7 +222,7 @@ from Expresiones.Logica import Logica
 from Expresiones.Identificador import Identificador
 from Expresiones.Casteo import Casteo
 from Expresiones.Read import Read
-
+from Expresiones.AccesoArreglo import AccesoArreglo
 #___________________________________ REPORTE ______________________________________
 from Reporte.Reporte import reporte
 
@@ -254,7 +262,10 @@ def p_instruccion(t) :
                         | main
                         | funcion 
                         | retorno
-                        | llamada'''
+                        | llamada
+                        | declaracion_arreglo
+                        | declaracion_arreglo2
+                        | modificar_arreglo'''
     t[0] = t[1]
 
 def p_instruccion_error(t):
@@ -401,10 +412,6 @@ def p_caso(t):
     '''casos : Rcase expresion DOSPUNTO instrucciones'''
     t[0] = Caso(t[2],t[4],t.lineno(1), find_column(input, t.slice[1]))
 
-
-
-
-
 #_______________________________________ CONTINUE ___________________________________
 def p_continue(t):
     '''continue : Rcontinue fin_instr'''
@@ -464,6 +471,82 @@ def p_parametros(t):
 def p_parametro_llam(t):
     '''parametro_llam : expresion'''
     t[0]=t[1]
+
+#_______________________________________ DECLARACION ARREGLO _________________________
+
+def p_tipo1_arre(t):
+    '''declaracion_arreglo : tipo lista_Dim ID IGUAL Rnew tipo lista_expresiones fin_instr'''
+    t[0] = DeclaracionArreglo(t[1],t[2],t[3],t[6],t[7],t.lineno(3), find_column(input, t.slice[3]))
+
+
+def p_lista_Dim1(t) :
+    'lista_Dim     : lista_Dim CORA CORC'
+    t[0] = t[1] + 1
+    
+def p_lista_Dim2(t) :
+    'lista_Dim    : CORA CORC'
+    t[0] = 1
+
+def p_lista_expresiones_1(t) :
+    'lista_expresiones     : lista_expresiones CORA expresion CORC'
+    t[1].append(t[3])
+    t[0] = t[1]
+    
+def p_lista_expresiones_2(t) :
+    'lista_expresiones    : CORA expresion CORC'
+    t[0] = [t[2]]
+
+#____________________________ ARREGLO TIPO 2 _______________________________________
+
+def p_tipo2_arreglo(t):
+    '''declaracion_arreglo2 : tipo lista_Dim ID IGUAL LLAVEA tipo_lista LLAVEC fin_instr'''
+    t[0] = DeclaracionArreglo2(t[1],t[2],t[3],t[6],t.lineno(3), find_column(input, t.slice[3]))
+
+def p_tipo_listad1(t):
+    '''tipo_lista : d1'''
+    t[0] = t[1]
+
+def p_tipo_listad2(t):
+    '''tipo_lista : d2'''
+    t[0] = t[1]
+
+def p_tipo_listad3(t):
+    '''tipo_lista : d3'''
+    t[0] = t[1]
+
+def p_d1(t):
+    '''d1 : d1 COMA expresion'''
+    t[1].append(t[3])
+    t[0]=t[1]
+
+def p_d11(t):
+    '''d1 : expresion'''
+    t[0] = [t[1]]
+
+def p_d2(t):
+    '''d2 : d2 COMA LLAVEA d1 LLAVEC'''
+    t[1].append(t[4])
+    t[0]=t[1]
+
+def p_d21(t):
+    '''d2 : LLAVEA d1 LLAVEC'''
+    t[0] = [t[2]]
+
+def p_d3(t):
+    '''d3 : d3 COMA LLAVEA d2 LLAVEC'''
+    t[1].append(t[4])
+    t[0]=t[1]
+
+def p_d31(t):
+    '''d3 : LLAVEA d2 LLAVEC'''
+    t[0]=[t[2]]
+
+#__________________________________ MODIFICAR ARREGLO _______________________________
+def p_modificar_arreglo(t):
+    '''modificar_arreglo :  ID lista_expresiones IGUAL expresion fin_instr'''
+    t[0] = ModificarArreglo(t[1],t[2],t[4],t.lineno(1), find_column(input, t.slice[1]))
+
+
 #_______________________________________ EXPRESION ____________________________________
 
 def p_expresion_binaria(t):
@@ -569,6 +652,10 @@ def p_casteo(t):
 def p_read(t):
     ''' expresion : Rread PARA PARC'''
     t[0]=Read(t.lineno(1), find_column(input, t.slice[1]))
+
+def p_expresion_arreglo(t):
+    '''expresion : ID lista_expresiones'''
+    t[0] = AccesoArreglo(t[1],t[2],t.lineno(1), find_column(input, t.slice[1]))
 
 
 import ply.yacc as yacc

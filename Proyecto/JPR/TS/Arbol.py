@@ -58,6 +58,8 @@ class Arbol:
     def getDot(self, raiz): ## DEVUELVE EL STRING DE LA GRAFICA EN GRAPHVIZ
         self.dot = ""
         self.dot += "digraph {\n"
+        self.dot +="rankdir=UD\n"# borrar por si acaso
+        self.dot +="node[shape=record]\n" #borrar por si acaso
         self.dot += "n0[label=\"" + raiz.getValor().replace("\"", "\\\"") + "\"];\n"
         self.contador = 1
         self.recorrerAST("n0", raiz)

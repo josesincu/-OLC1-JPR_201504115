@@ -12,6 +12,7 @@ class Declaracion(Instruccion):
         self.expresion = expresion
         self.fila = fila
         self.columna = columna
+        self.arreglo = False
 
     def interpretar(self, tree, table,jconsola):
         
@@ -23,7 +24,7 @@ class Declaracion(Instruccion):
             return value
 
         if self.tipo == TIPO.NULO:
-            simbolo = Simbolo(str(self.identificador), self.expresion.tipo, self.fila, self.columna, value)
+            simbolo = Simbolo(str(self.identificador), self.expresion.tipo,self.arreglo,self.fila, self.columna, value)
             result = table.setTabla(simbolo)
 
             if isinstance(result, Excepcion): return result
@@ -32,7 +33,7 @@ class Declaracion(Instruccion):
         if self.tipo != self.expresion.tipo:
             return Excepcion("Semantico", "Tipo de dato diferente en Declaracion", self.fila, self.columna)
 
-        simbolo = Simbolo(str(self.identificador), self.tipo, self.fila, self.columna, value)
+        simbolo = Simbolo(str(self.identificador), self.tipo,self.arreglo, self.fila, self.columna, value)
 
         result = table.setTabla(simbolo)
 

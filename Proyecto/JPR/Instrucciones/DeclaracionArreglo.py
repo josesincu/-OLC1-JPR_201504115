@@ -56,7 +56,7 @@ class DeclaracionArreglo(Instruccion):
             return Excepcion("Semantico", "Expresion diferente a ENTERO en Arreglo.", self.fila, self.columna)
         contador = 0
         while contador < num:
-            arr.append(self.crearDimensiones(tree, table, copy.copy(expresiones)))
+            arr.append(self.crearDimensiones(tree, table, copy.copy(expresiones),jconsola))
             contador += 1
         return arr
 

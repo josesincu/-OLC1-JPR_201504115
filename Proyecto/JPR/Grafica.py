@@ -152,6 +152,9 @@ from Instrucciones.Break import Break
 from Instrucciones.Main import Main
 from Instrucciones.Funcion import Funcion
 from Instrucciones.Return import Return
+from Instrucciones.ModificarArreglo import ModificarArreglo
+from Instrucciones.DeclaracionArreglo import DeclaracionArreglo
+from Instrucciones.DeclaracionArreglo2 import DeclaracionArreglo2
 #_______________________ FUNCIONES NATIVAS ______________________________________
 from Nativas.ToUpper import ToUpper
 from Nativas.ToLower import ToLower
@@ -165,6 +168,7 @@ from TS.Tipo import TIPO
 from Reporte.Reporte import reporte
 #___________________________________ READ _______________________________________
 from Expresiones.Read import Read
+from Expresiones.AccesoArreglo import AccesoArreglo
 
 def crearNativas(ast):
     #toUpper
@@ -231,7 +235,7 @@ def ejecutar_entrada():
         if isinstance(instruccion, Funcion):
             ast.addFuncion(instruccion)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
             #ast.addSim_Tabla((instruccion.nombre,"Funcion","----","Global",'----',instruccion.fila,instruccion.columna))
-        if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion):
+        if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion) or isinstance(instruccion,DeclaracionArreglo) or isinstance(instruccion,ModificarArreglo) or isinstance(instruccion,AccesoArreglo) or isinstance(instruccion,DeclaracionArreglo2):
             #if isinstance(instruccion,Declaracion):
             #   ast.addSim_Tabla((instruccion.identificador,"Variable","----","Global",instruccion.expresion,instruccion.fila,instruccion.columna))
             value = instruccion.interpretar(ast,TSGlobal,consola)
@@ -276,7 +280,7 @@ def ejecutar_entrada():
 
         
     for instruccion in ast.getInstrucciones():    # 3ERA PASADA (SENTENCIAS FUERA DE MAIN)
-        if not (isinstance(instruccion, Main) or isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion, Funcion) or isinstance(instruccion,Declaracion_sinAsignacion)):
+        if not (isinstance(instruccion, Main) or isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion, Funcion) or isinstance(instruccion,Declaracion_sinAsignacion) or isinstance(instruccion,DeclaracionArreglo) or isinstance(instruccion,ModificarArreglo) or isinstance(instruccion,AccesoArreglo) or isinstance(instruccion,DeclaracionArreglo2)):
             err = Excepcion("Semantico", "Sentencias fuera de Main", instruccion.fila, instruccion.columna)
             ast.getExcepciones().append(err)
             #ast.updateConsola(err.toString())

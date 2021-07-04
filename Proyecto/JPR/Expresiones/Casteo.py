@@ -67,16 +67,17 @@ class Casteo(Instruccion):
                 try:
                     return chr(self.obtenerVal(self.expresion.tipo, val))
                 except:
-                    return Excepcion("Semantico", "No se puede castear para caracter. en decimal", self.fila, self.columna)
+                    return Excepcion("Semantico", "No se puede castear para caracter.", self.fila, self.columna)
             return Excepcion("Semantico", "Tipo Erroneo de casteo para Caracter.", self.fila, self.columna)
         if self.tipo == TIPO.BOOLEANO:
             if self.expresion.tipo == TIPO.CADENA:
                 try:
                     if self.obtenerVal(self.expresion.tipo, val).lower() == "true":
                         return True
-                    return False
+                    elif self.obtenerVal(self.expresion.tipo, val).lower() == "false":
+                        return False
                 except:
-                    return Excepcion("Semantico", "No se puede castear para booleano. en decimal", self.fila, self.columna)
+                    return Excepcion("Semantico", "No se puede castear para booleano. con string", self.fila, self.columna)
             return Excepcion("Semantico", "Tipo Erroneo de casteo para Caracter.", self.fila, self.columna)
         return Excepcion("Semantico", "Tipo "+str(self.tipo)+" No Forma Parte de Casteo.", self.fila, self.columna)
 

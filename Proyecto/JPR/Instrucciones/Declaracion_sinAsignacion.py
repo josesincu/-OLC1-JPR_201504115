@@ -11,12 +11,13 @@ class Declaracion_sinAsignacion(Instruccion):
         self.tipo = tipo
         self.fila = fila
         self.columna = columna
+        self.arreglo = False
         
 
     def interpretar(self, tree, table,jconsola):
         if self.tipo == TIPO.VAR:
             self.tipo = TIPO.NULO
-        simbolo = Simbolo(str(self.identificador), self.tipo, self.fila, self.columna,None)
+        simbolo = Simbolo(str(self.identificador), self.tipo,self.arreglo, self.fila, self.columna,None)
 
         result = table.setTabla(simbolo)
 
