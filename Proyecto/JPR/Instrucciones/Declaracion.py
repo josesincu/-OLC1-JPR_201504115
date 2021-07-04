@@ -20,11 +20,13 @@ class Declaracion(Instruccion):
             self.tipo = TIPO.NULO
         
         value = self.expresion.interpretar(tree, table,jconsola) # Valor a asignar a la variable
+        
+
         if isinstance(value, Excepcion): 
             return value
 
         if self.tipo == TIPO.NULO:
-            simbolo = Simbolo(str(self.identificador), self.expresion.tipo,self.arreglo,self.fila, self.columna, value)
+            simbolo = Simbolo(str(self.identificador), self.expresion.tipo,self.expresion.arreglo,self.fila, self.columna, value)
             result = table.setTabla(simbolo)
 
             if isinstance(result, Excepcion): return result
@@ -42,7 +44,7 @@ class Declaracion(Instruccion):
     
     def getNodo(self):
         nodo = NodoAST("DECLARACION")
-        nodo.agregarHijo(str(self.tipo))
+        nodo.agregarHijo(str(self.expresion.tipo))
         nodo.agregarHijo(str(self.identificador))
         nodo.agregarHijoNodo(self.expresion.getNodo())
         return nodo

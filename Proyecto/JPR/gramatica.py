@@ -502,6 +502,10 @@ def p_tipo2_arreglo(t):
     '''declaracion_arreglo2 : tipo lista_Dim ID IGUAL LLAVEA tipo_lista LLAVEC fin_instr'''
     t[0] = DeclaracionArreglo2(t[1],t[2],t[3],t[6],t.lineno(3), find_column(input, t.slice[3]))
 
+def p_tipo2_arreglo_asig(t):
+    '''declaracion_arreglo2 : tipo lista_Dim ID IGUAL ID'''
+    t[0] = DeclaracionArreglo2(t[1],t[2],t[3],Identificador(t[5],t.lineno(5), find_column(input, t.slice[5])),t.lineno(3), find_column(input, t.slice[3]))
+
 def p_tipo_listad1(t):
     '''tipo_lista : d1'''
     t[0] = t[1]

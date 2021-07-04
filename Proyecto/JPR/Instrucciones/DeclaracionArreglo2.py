@@ -1,3 +1,4 @@
+from Expresiones.Identificador import Identificador
 from Abstract.Instruccion import Instruccion
 from Abstract.NodoAST import NodoAST
 from TS.Excepcion import Excepcion
@@ -23,6 +24,14 @@ class DeclaracionArreglo2(Instruccion):
         
         #if self.dimensiones != len(self.Lexpresiones):   #VERIFICACION DE DIMENSIONES
         #    return Excepcion("Semantico", "Dimensiones diferentes en Arreglo.", self.fila, self.columna)
+        if isinstance(self.Lexpresiones,Identificador):
+            datoObtenido = self.Lexpresiones.interpretar(tree,table,jconsola)
+            if isinstance(datoObtenido,Excepcion): return datoObtenido
+            simbolo = Simbolo(str(self.identificador).lower(), self.tipo, self.arreglo, self.fila, self.columna,datoObtenido)
+            result = table.setTabla(simbolo)
+            if isinstance(result, Excepcion): return result
+            return None
+                    
         #_______________________ OBTENER TAMANIOS VECTOR_________________________
         vect_tam = []
         if self.dimensiones == 1:
@@ -73,9 +82,14 @@ class DeclaracionArreglo2(Instruccion):
         nodo.agregarHijo(str(self.dimensiones))
         nodo.agregarHijo(str(self.identificador))
         #nodo.agregarHijo(str(self.tipo2))
+
         exp = NodoAST("LISTA EXPRESIONES")
+        if isinstance(self.Lexpresiones,Identificador):
+            exp.agregarHijoNodo(self.Lexpresiones.getNodo())
+            nodo.agregarHijoNodo(exp)
+            return nodo
+
         if self.dimensiones == 1:
-            
             for expresion in self.Lexpresiones:
                 exp.agregarHijoNodo(expresion.getNodo())
 
@@ -83,6 +97,7 @@ class DeclaracionArreglo2(Instruccion):
             for expresion in self.Lexpresiones:
                 for expresion2 in expresion:
                     exp.agregarHijoNodo(expresion2.getNodo())
+
         elif self.dimensiones == 3:
             for expresion in self.Lexpresiones:
                 for expresion2 in expresion:
