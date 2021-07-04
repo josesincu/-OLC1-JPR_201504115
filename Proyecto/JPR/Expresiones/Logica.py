@@ -11,6 +11,7 @@ class Logica(Instruccion):
         self.fila = fila
         self.columna = columna
         self.tipo = TIPO.BOOLEANO
+        self.arreglo = False
 
     
     def interpretar(self, tree, table,jconsola):

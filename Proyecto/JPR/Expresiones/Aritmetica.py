@@ -11,6 +11,7 @@ class Aritmetica(Instruccion):
         self.fila = fila
         self.columna = columna
         self.tipo = None
+        self.arreglo = False
 
     
     def interpretar(self, tree, table,jconsola):

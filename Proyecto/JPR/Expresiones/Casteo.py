@@ -9,6 +9,7 @@ class Casteo(Instruccion):
         self.fila = fila
         self.columna = columna
         self.tipo = tipo
+        self.arreglo = False
 
     
     def interpretar(self, tree, table,jconsola):

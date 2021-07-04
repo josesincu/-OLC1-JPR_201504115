@@ -11,6 +11,7 @@ class Read(Instruccion):
         self.fila = fila
         self.columna = columna
         self.tipo = TIPO.CADENA
+        self.arreglo = False
 
     def interpretar(self, tree, table,jconsola):
         lectura = simpledialog.askstring("Input", "Ver consola")

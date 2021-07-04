@@ -13,6 +13,7 @@ class AccesoArreglo(Instruccion):
         self.expresiones = expresiones
         self.fila = fila
         self.columna = columna
+        self.arreglo = False
 
 
     def interpretar(self, tree, table,jconsola):
@@ -22,6 +23,7 @@ class AccesoArreglo(Instruccion):
             return Excepcion("Semantico", "Variable " + self.identificador + " no encontrada.", self.fila, self.columna)
 
         self.tipo = simbolo.getTipo()
+        #self.arreglo = simbolo.getArreglo()
         
         if not simbolo.getArreglo(): 
             return Excepcion("Semantico", "Variable " + self.identificador + " no es un arreglo.", self.fila, self.columna)

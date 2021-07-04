@@ -446,6 +446,10 @@ def p_parametro(t):
     '''parametro : tipo ID'''
     t[0] = {'tipo':t[1],'identificador':t[2]}
 
+def p_parametro_Arr(t):
+    '''parametro : tipo ID CORA CORC'''
+    t[0] = {'tipo':t[1],'identificador':t[2]}
+
 #_________________________________________RETURN _______________________________________
 def p_retorno(t):
     ''' retorno : Rreturn expresion fin_instr '''

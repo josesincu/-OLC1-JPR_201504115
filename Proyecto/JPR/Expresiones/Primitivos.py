@@ -7,6 +7,7 @@ class Primitivos(Instruccion):
         self.valor = valor
         self.fila = fila
         self.columna = columna
+        self.arreglo = False
 
     def interpretar(self, tree, table,jconsola):
         
