@@ -15,12 +15,13 @@ class Llamada(Instruccion):
         self.parametros = parametros
         self.fila = fila
         self.columna = columna
+        self.arreglo = False
     
     def interpretar(self, tree, table,jconsola):
         result = tree.getFuncion(self.nombre) ## OBTENER LA FUNCION
         if result == None: # NO SE ENCONTRO LA FUNCION
             return Excepcion("Semantico", "NO SE ENCONTRO LA FUNCION: " + self.nombre, self.fila, self.columna)
-        nuevaTabla = TablaSimbolos(tree.getTSGlobal())
+        nuevaTabla = TablaSimbolos(tree.getTSGlobal(),"Funcion")
         # OBTENER PARAMETROS
         if len(result.parametros) == len(self.parametros): #LA CANTIDAD DE PARAMETROS ES LA ADECUADA
             contador=0
@@ -55,6 +56,14 @@ class Llamada(Instruccion):
                 if result.nombre == "typeof":
                     #creacion simbolo
                     simbolo = Simbolo(str(result.parametros[contador]['identificador']).lower(),expresion.tipo,False,self.fila, self.columna, resultExpresion)
+                    resultTabla = nuevaTabla.setTabla(simbolo)
+                    if isinstance(resultTabla, Excepcion): 
+                        return resultTabla
+                    break
+                #_________________ length ____________________________________________
+                if result.nombre == "length":
+                    #creacion simbolo
+                    simbolo = Simbolo(str(result.parametros[contador]['identificador']).lower(),expresion.tipo,expresion.arreglo,self.fila, self.columna, resultExpresion)
                     resultTabla = nuevaTabla.setTabla(simbolo)
                     if isinstance(resultTabla, Excepcion): 
                         return resultTabla

@@ -35,9 +35,10 @@ class AccesoArreglo(Instruccion):
             if isinstance(value, Excepcion): return value
             if isinstance(value, list):
                 return Excepcion("Semantico", "Acceso a Arreglo incompleto.", self.fila, self.columna)
-            return value
+            if value != None:
+                return value
         except:
-            return Exception("Semantico","Indices fuera de ranfo",self.fila,self.columna)
+            return Exception("Semantico","Error Indices fuera de rango",self.fila,self.columna)
 
 
     def getNodo(self):
@@ -62,6 +63,7 @@ class AccesoArreglo(Instruccion):
             return Excepcion("Semantico", "Expresion diferente a ENTERO en Arreglo.", self.fila, self.columna)
         
         value = self.buscarDimensiones(tree, table, copy.copy(expresiones), arreglo[num],jconsola)
+        
             
         return value
 

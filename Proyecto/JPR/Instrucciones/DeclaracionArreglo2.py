@@ -9,6 +9,7 @@ from re import A
 
 class DeclaracionArreglo2(Instruccion):
     def __init__(self, tipo1, dimensiones, identificador,Lexpresiones, fila, columna):
+        # int [] num = {1,2}
         self.identificador = identificador
         self.tipo = tipo1
         self.dimensiones = dimensiones
@@ -73,6 +74,7 @@ class DeclaracionArreglo2(Instruccion):
         simbolo = Simbolo(str(self.identificador).lower(), self.tipo, self.arreglo, self.fila, self.columna, value)
         result = table.setTabla(simbolo)
         if isinstance(result, Excepcion): return result
+        tree.addSim_Tabla((self.identificador,"Arreglo",self.tipo,table.nombre_Ent,value,self.fila,self.fila))
         return None
         
 

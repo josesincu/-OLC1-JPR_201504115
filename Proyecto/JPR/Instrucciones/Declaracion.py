@@ -18,7 +18,7 @@ class Declaracion(Instruccion):
         
         if self.tipo == TIPO.VAR:
             self.tipo = TIPO.NULO
-        
+    
         value = self.expresion.interpretar(tree, table,jconsola) # Valor a asignar a la variable
         
 
@@ -30,6 +30,7 @@ class Declaracion(Instruccion):
             result = table.setTabla(simbolo)
 
             if isinstance(result, Excepcion): return result
+            tree.addSim_Tabla((self.identificador,"Variable",self.expresion.tipo,table.nombre_Ent,value,self.fila,self.fila))
             return None
 
         if self.tipo != self.expresion.tipo:
@@ -40,6 +41,7 @@ class Declaracion(Instruccion):
         result = table.setTabla(simbolo)
 
         if isinstance(result, Excepcion): return result
+        tree.addSim_Tabla((self.identificador,"Variable",self.expresion.tipo,table.nombre_Ent,value,self.fila,self.fila))
         return None
     
     def getNodo(self):

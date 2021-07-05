@@ -18,7 +18,7 @@ class For(Instruccion):
 
     def interpretar(self, tree, table,jconsola):
         #self.declaracion.interpretar(tree,table) #NUEVO ENTORNO
-        nuevaTabla = TablaSimbolos(table)
+        nuevaTabla = TablaSimbolos(table,"FOR CONDICION")
         self.declaracion.interpretar(tree,nuevaTabla,jconsola)
         while True:
             
@@ -28,7 +28,7 @@ class For(Instruccion):
             if self.condicion.tipo == TIPO.BOOLEANO:
                
                 if estado == True:
-                    nuevaTabl = TablaSimbolos(nuevaTabla)       #NUEVO ENTORNO
+                    nuevaTabl = TablaSimbolos(nuevaTabla,"FOR INS")       #NUEVO ENTORNO
                     for instruccion in self.instrucciones:
 
                         result = instruccion.interpretar(tree, nuevaTabl,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF

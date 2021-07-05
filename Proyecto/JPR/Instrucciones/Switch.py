@@ -36,7 +36,7 @@ class Switch(Instruccion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -60,7 +60,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == float(valor_caso):
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -84,7 +84,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -108,7 +108,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == float(valor_caso):
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -133,7 +133,7 @@ class Switch(Instruccion):
                     return valor_caso
                 if valor_expresion == valor_caso:
                     ejecutado = True
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -158,7 +158,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -183,7 +183,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -208,7 +208,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if str(valor_expresion) == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -233,7 +233,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -258,7 +258,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -283,7 +283,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -308,7 +308,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == str(valor_caso):
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -332,7 +332,7 @@ class Switch(Instruccion):
                 if isinstance(valor_caso,Excepcion):
                     return valor_caso
                 if valor_expresion == valor_caso:
-                    nuevaTabla = TablaSimbolos(table)
+                    nuevaTabla = TablaSimbolos(table,"SWITCH CASE")
                     for instruccion in self.listaCaso[x].instrucciones:
                         result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                         if isinstance(result, Excepcion) :
@@ -357,7 +357,7 @@ class Switch(Instruccion):
             #return Excepcion("Semantico", "Tipo Erroneo de operacion para ==.", self.fila, self.columna)
         
         if ejecutado == False and self.casoDefault != None:
-            nuevaTabla = TablaSimbolos(table)
+            nuevaTabla = TablaSimbolos(table,"SWITCH DAFAULT")
             for instruccion in self.casoDefault:
                 result = instruccion.interpretar(tree, nuevaTabla,jconsola) #EJECUTA INSTRUCCION ADENTRO DEL IF
                 if isinstance(result, Excepcion) :

@@ -12,6 +12,7 @@ import os
 from Abstract.NodoAST import NodoAST
 import webbrowser
 
+
 #/home/dark/A_2021/Vaciones_Junio/Compi1/Laboratorio/Proyecto1/Proyecto/JPR/gramatica.py
 #__________________________importando analizador sintactico _______________________
 
@@ -108,30 +109,6 @@ def colorearTexto(tipo,regex):
         editor.tag_add(tipo, pos, index2)
     
 
-def pintar_TS_IDE():
-    for row in debugger.get_children():
-        debugger.delete(row)#colorearTextoAugus(tipo,regex)
-
-
-    if len(Inter.instrucciones)>0:
-        lis_symbol=Inter.ts_global.simbolos
-        lis_fun = Inter.ts_global.funciones
-        for item in lis_symbol:
-            sim=Inter.ts_global.obtener(item,1)
-            if sim.tipo==TS.TIPO_DATO.ARREGLO:
-                val=""
-                padre=debugger.insert("", 1, text=sim.id, values=(val))
-                for item_arr in sim.valor:
-                    val=""
-                    cad=item_arr.split('_')
-                    for cad_item in cad:
-                        if cad_item!="":
-                            val+="["+cad_item+"]"
-                    val+="="+str(sim.valor[item_arr])
-                    debugger.insert(padre, END, text="", values=(val))
-            else:
-                debugger.insert("", END, text=sim.id, values=(sim.valor))
-
 #__________________ Tabla ________________________________
 from TS.Arbol import Arbol
 from TS.TablaSimbolos import TablaSimbolos
@@ -217,11 +194,10 @@ def crearNativas(ast):
 
 def ejecutar_entrada():
     cont=editor.get("1.0",END)
-    consola.delete('1.0', END)
     
     instrucciones = parse(cont) # ARBOL AST
     ast = Arbol(instrucciones)
-    TSGlobal = TablaSimbolos()
+    TSGlobal = TablaSimbolos(None,"Global")
     ast.setTSglobal(TSGlobal)
     crearNativas(ast)
     
@@ -295,64 +271,27 @@ def ejecutar_entrada():
     grafo = ast.getDot(init) #DEVUELVE EL CODIGO GRAPHVIZ DEL AST
 
     dirname = os.path.dirname(__file__)
-    direcc = os.path.join(dirname, 'ast.dot')
+    direcc = os.path.join(dirname, nombreFile+'.dot')
     arch = open(direcc, "w+")
     arch.write(grafo)
     arch.close()
-    os.system('dot -T pdf -o ast.pdf ast.dot')
+    os.system('dot -T pdf -o '+nombreFile+'.pdf '+ nombreFile+'.dot')
 
     #_________________________________________________
     reporte(nombreFile,ast.getExcepciones())
     #consola.insert('insert',ast.getConsola())
     for contact in ast.getSim_Tabla():
-        debugger.insert('',END, values=contact)
+        tabla_simbolo.insert('',END, values=contact)
     
 
 
 def iniciar_debug():
-    global no_instruccion,ejecucion_automatica
-    ejecucion_automatica=0
-    no_instruccion=0
-    Inter.inicializarGUI(editorC3D,consola)
-    Inter.limpiarValores()
-    cont=editorC3D.get("1.0",END)
-    Inter.inicializarEjecucionAscendente(cont)
-    Inter.inicializarTS()
-
+    pass
 waitForCommand=0
+
 def ejec_debug():
-    global ts_debug, no_instruccion, waitForCommand
-    if waitForCommand==0 or waitForCommand==2: #0=Sin Entrada, 1=Esperando, 2=Comando Ingresado
-        if no_instruccion<len(Inter.instrucciones) :
-            is_asig=Inter.instrucciones[no_instruccion]
-            if isinstance(is_asig,Asignacion): 
-                # COMANDO PARA LEER DE CONSOLA
-                if isinstance(is_asig.valor,Read) and waitForCommand==0:
-                    waitForCommand=1
-                    return None
-            #EJECUTAR INSTRUCCION
-            instr_temp=Inter.ejecutarInstruccionUnitaria(1,no_instruccion)
-            if instr_temp is not None:
-                if instr_temp==-10 : # EXIT
-                    no_instruccion=len(Inter.instrucciones)
-                else: #GOTO
-                    no_instruccion=instr_temp
-            waitForCommand=0
-            no_instruccion+=1
-            pintar_TS_IDE()
-        else:
-            MessageBox.showinfo("Finalizado","Ultima instruccion ejecutada.")
+    pass
     
-
-def comando_ingresado(event):
-    #consola.insert("end","\n>>")
-    global waitForCommand
-    waitForCommand=2
-    if ejecucion_automatica == 1:
-        continuar_ejecucionAsc()
-    elif ejecucion_automatica == 2:
-        continuar_ejecucionDesc()
-
 def getSaltoLinea(cadena):
     cont=0
     for i in cadena:
@@ -360,33 +299,16 @@ def getSaltoLinea(cadena):
             cont=cont+1
     return cont
 
-def draw_instruction(indexDeb):
 
-    start=0
-    last=0
-    editor.tag_remove("buscar","1.0",END)
-    arreglo=re.split(';|:',editor.get("1.0",END))
-    
-    for i in range(0,len(arreglo)):
-        if i<indexDeb:
-            start+=getSaltoLinea(arreglo[i])
-        else:
-            #last=len(arreglo[i])
-            break
-    start=start+1 # main no tiene salto
-    #start=start+1 # arreglo empieza en 0
-
-    primero=str(float(start)+0.1)
-    ultimo=str(float(start)+0.81)
-    editor.tag_add("buscar", primero, ultimo)
-    
 def ast_grafica():
-    c3d.graficarAST()
-    #Inter.generarReporteAST()
+    #Cambia la ruta para indicar la localización del archivo
+    nombreArchivo = './' +nombreFile+'.pdf'
+    #crearReporte(nombreFile)
+    webbrowser.open_new_tab(nombreArchivo)
+    
 
 def rep_tablasimbolos():
-    c3d.tabla_simbolosMinusC()
-    #Inter.generarReporteTS()
+    pass
 
 def rep_errores():
     #Cambia la ruta para indicar la localización del archivo
@@ -394,56 +316,6 @@ def rep_errores():
     #crearReporte(nombreFile)
     webbrowser.open_new_tab(nombreArchivo)
 
-def wait_for_command():
-    global comando_consola
-    comando_consola=''
-    print('Entro al wait for....')
-    while comando_consola == '':
-        print('Waiting...')
-        time.sleep(0.3) 
-    consola.insert('end','>>')
-    hilo2 = threading.Thread(target=reemplazar)   
-    hilo2.start()
-    return comando_consola
-
-
-def getInput(event):
-    global comando_consola
-    contenido=consola.get("1.0","end-1c")
-    lines = contenido.split(">>")
-
-    last_line = lines[len(lines)-1]
-    #print('El comando es: ',last_line)
-    comando_consola=last_line
-
-
-def reemplazar():
-    txt1=txt_buscar.get()
-    txt2=txt_reemplazar.get()
-    if txt2 == "":
-        txt2=txt1
-
-    sustituciones = {txt1:txt2}
-
-    regex = r'\y(?:{})\y'.format('|'.join(sustituciones.keys()))
-    editor.tag_remove("buscar", '1.0', END)
-
-    count = IntVar(editor)
-    pos = editor.index("end")
-
-    while True:
-        pos = editor.search(regex,  pos, "1.0",  backwards=True, regexp=True, count=count)
-        if not pos:
-            break
-
-        idx2  ='{}+{}c'.format(pos, count.get())
-        editor.tag_add("found", pos, idx2)
-        new = sustituciones[editor.get(pos, idx2)]
-        editor.delete(pos, idx2)
-        editor.insert(pos, new)
-        editor.tag_add("buscar", pos, '{}+{}c'.format(pos, len(new)))
-
-    txt_reemplazar.delete(0,'end')
 
 def acerca_de():
     MessageBox.showinfo("JPR-Compiladores1","\n Facultad de Ingenieria, USAC \nJose Castro Sincu \n201504115")
@@ -461,6 +333,8 @@ def nuevo():
 def abrir(): 
     global pathFile
     global nombreFile
+    tabla_simbolo.delete(*tabla_simbolo.get_children())
+    consola.delete('1.0', END)
 
     pathFile = FileDialog.askopenfilename(
         initialdir='./Archivos/',
@@ -569,17 +443,10 @@ ejecutarmenu.add_command(label="AST", command=ast_grafica)
 ejecutarmenu.add_command(label="Tabla de Simbolos", command=rep_tablasimbolos)
 ejecutarmenu.add_command(label="Reporte Errores", command=rep_errores)
 ejecutarmenu.add_separator()
-ejecutarmenu.add_command(label="Iniciar Debugger",command=iniciar_debug)
-ejecutarmenu.add_command(label="Siguiente Paso", command=ejec_debug)
 
-
-#___________________________________ EDITAR MENU ____________________
-editarmenu = Menu(menubar, tearoff=0)
-editarmenu.add_command(label="Buscar y Reemplazar", command=reemplazar)
-editarmenu.add_command(label="Buscar", command=reemplazar)
-
+#__________________________  MENU PRINCIPAL ________________________
 menubar.add_cascade(label="Archivo", menu=filemenu)
-menubar.add_cascade(label="Editar", menu=editarmenu)
+#menubar.add_cascade(label="Editar", menu=editarmenu)
 menubar.add_cascade(label="Ejecutar", menu=ejecutarmenu)
 
 menubar.add_cascade(label="Ayuda", menu=ayudamenu)
@@ -595,35 +462,21 @@ topSide=Frame(leftside)
 topSide.pack(side=TOP)
 topSide.config(width=80, height=5)
 
-label = Label(topSide, text="Buscar")
-label.grid(row=0,column=0, sticky=W, padx=5, pady=5)
-
-txt_buscar = Entry(topSide)
-txt_buscar.grid(row=0,column=1, padx=5, pady=5)
-
-btn_buscar=Button(topSide, text="OK", command=reemplazar)
-btn_buscar.config(width=2)
-btn_buscar.grid(row=0, column=2, padx=5,pady=5)
-
-label2 = Label(topSide, text="Reemplazar Por")
+label2 = Label(topSide, text="Linea Actual")
 label2.grid(row=0,column=3, sticky=W, padx=5, pady=5)
 
-txt_reemplazar = Entry(topSide)
-txt_reemplazar.grid(row=0,column=4, padx=5, pady=5)
-
-btn_buscar=Button(topSide, text="OK", command=reemplazar)
-btn_buscar.config(width=2)
-btn_buscar.grid(row=0, column=5, padx=5,pady=5)
+label3 = Label(topSide,text="0")
+label3.grid(row=0,column=4, padx=5, pady=5)
 
 label2 = Label(topSide, text="Debug")
 label2.grid(row=0,column=6, sticky=W, padx=5, pady=5)
 
 btn_iniciar=Button(topSide, text="Inicio",command=iniciar_debug)
-btn_iniciar.config(width=4)
+btn_iniciar.config(width=10)
 btn_iniciar.grid(row=0, column=7, padx=5,pady=5)
 
-btn_cont=Button(topSide, text="»»", command=ejec_debug)
-btn_cont.config(width=2)
+btn_cont=Button(topSide, text=">>", command=ejec_debug)
+btn_cont.config(width=8)
 btn_cont.grid(row=0, column=8, padx=5,pady=5)
 
 #----------------------------------------------
@@ -638,10 +491,7 @@ FrameLines.config(width=5, height=25,bg="#D5DBDB",
              padx=0, pady=0, selectbackground="black")
 
 editor = st.ScrolledText(cajaPrincipal)
-#editorC3D = Text(cajaPrincipal)
-#editorC3D.pack(side=RIGHT)
-#editorC3D.config(width=30, height=25,bg="#D5DBDB",
-#            padx=0, pady=0, background="white")
+
 select_font = Font(family="Helvetica", size=8, weight="normal" )
 editor.tag_config('buscar', background='#ffff00', font=select_font)
 font_resaltar()
@@ -679,23 +529,23 @@ consola.pack(side=RIGHT)
 #-------------------------------------------
 
 columnas = ('#1','#2','#3','#4','#5','#6','#7')
-debugger =Treeview(leftBOTTOM,columns=columnas, show='headings')
+tabla_simbolo =Treeview(leftBOTTOM,columns=columnas, show='headings')
 
-debugger.heading('#1', text="Identificador",anchor=W)
-debugger.heading("#2", text="Tipo",anchor=W)
-debugger.heading("#3", text="Tipo",anchor=W)
-debugger.heading("#4", text="Entorno",anchor=W)
-debugger.heading("#5", text="Valor",anchor=W)
-debugger.heading("#6", text="Linea",anchor=W)
-debugger.heading("#7", text="Columna",anchor=W)
+tabla_simbolo.heading('#1', text="Identificador",anchor=W)
+tabla_simbolo.heading("#2", text="Tipo",anchor=W)
+tabla_simbolo.heading("#3", text="Tipo",anchor=W)
+tabla_simbolo.heading("#4", text="Entorno",anchor=W)
+tabla_simbolo.heading("#5", text="Valor",anchor=W)
+tabla_simbolo.heading("#6", text="Linea",anchor=W)
+tabla_simbolo.heading("#7", text="Columna",anchor=W)
 
 scroll3 = Scrollbar(leftBOTTOM, orient=VERTICAL)
-debugger.configure(yscrollcommand = scroll3.set)
-scroll3.config( command = debugger.yview ) 
+tabla_simbolo.configure(yscrollcommand = scroll3.set)
+scroll3.config( command = tabla_simbolo.yview ) 
 scroll3.pack(side=RIGHT, fill=Y)
 
 
-debugger.pack(side=TOP,fill=Y)
+tabla_simbolo.pack(side=TOP,fill=Y)
 
 
 #-------------SCROLL--------------------

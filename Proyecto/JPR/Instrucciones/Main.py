@@ -15,8 +15,8 @@ class Main(Instruccion):
         nuevaTabla = TablaSimbolos(table,"Main")
         for instruccion in self.instrucciones:      # REALIZAR LAS ACCIONES
             value = instruccion.interpretar(tree,nuevaTabla,jconsola)
-            if isinstance(instruccion,Declaracion):
-                tree.addSim_Tabla((instruccion.identificador,"Variable","----","Main",instruccion.expresion,instruccion.fila,instruccion.columna))
+            #if isinstance(instruccion,Declaracion):
+            #    tree.addSim_Tabla((instruccion.identificador,"Variable","----","Main",instruccion.expresion,instruccion.fila,instruccion.columna))
             if isinstance(value, Excepcion) :
                 tree.getExcepciones().append(value)
                 #tree.updateConsola(value.toString())

@@ -18,5 +18,9 @@ class Caso(Instruccion):
     def getNodo(self):
         nodo = NodoAST("CASO")
         nodo.agregarHijo(self.expresion.getNodo())
-        nodo.agregarHijo(self.instrucciones.getNodo())
+
+        nodo_instr = NodoAST("Instrucciones Caso")
+        for inst in self.instrucciones:
+            nodo_instr.agregarHijoNodo(inst.getNodo())
+        nodo.agregarHijo(nodo_instr)
         return nodo

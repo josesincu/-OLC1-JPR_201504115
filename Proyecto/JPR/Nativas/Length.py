@@ -17,8 +17,15 @@ class Length(Funcion):
         if simbolo == None : return Excepcion("Semantico", "No se encontró el parámetro de Length", self.fila, self.columna)
         
         
-        if simbolo.getTipo() != TIPO.CADENA and simbolo.getTipo()!= TIPO.ARREGLO:
-            return Excepcion("Semantico", "Tipo de parametro de Length  no es cadena o arreglo.", self.fila, self.columna)
-        
-        self.tipo = TIPO.ENTERO
-        return len(simbolo.getValor())
+        if simbolo.getArreglo() == True:
+            self.tipo = TIPO.ENTERO
+            return len(simbolo.getValor())
+
+        if simbolo.getTipo() == TIPO.CADENA and simbolo.getArreglo() == False :
+            self.tipo = TIPO.ENTERO
+            return len(simbolo.getValor())
+
+            #return Excepcion("Semantico", "Tipo de parametro de Length  no es cadena o arreglo.", self.fila, self.columna)
+        return Excepcion("Semantico", "Tipo de parametro de Length  no es cadena o arreglo.", self.fila, self.columna)
+        #self.tipo = TIPO.ENTERO
+        #return len(simbolo.getValor())

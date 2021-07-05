@@ -6,3 +6,4 @@ __init__.py
 *.jpr
 *.dot
 *.pdf
+*.png

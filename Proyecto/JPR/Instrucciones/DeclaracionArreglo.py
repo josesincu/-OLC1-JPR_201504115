@@ -31,6 +31,8 @@ class DeclaracionArreglo(Instruccion):
         simbolo = Simbolo(str(self.identificador).lower(), self.tipo, self.arreglo, self.fila, self.columna, value)
         result = table.setTabla(simbolo)
         if isinstance(result, Excepcion): return result
+
+        tree.addSim_Tabla((self.identificador,"Arreglo",self.tipo,table.nombre_Ent,None,self.fila,self.fila))
         return None
 
     def getNodo(self):

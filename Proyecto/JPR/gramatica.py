@@ -127,7 +127,7 @@ def t_ID(t):
 
 def t_CADENA(t):
     r'\"((?:[^"\\]|\\.)*)\"'
-    t.value = t.value.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\"", "\"").replace("\\\\", "\\")[1:-1]
+    t.value = t.value.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\"", "\"").replace("\\\\", "\\").replace("\\\'", "\'")[1:-1]
     return t
 
 def t_CARACTER(t):
@@ -368,7 +368,7 @@ def p_incrementos(t):
 
 #_______________________________________    FOR _____________________________________
 def p_for(t):
-    ''' for : Rfor PARA declar_asig expresion PUNTOCOMA actualizacion PARC LLAVEA instrucciones LLAVEC'''
+    ''' for : Rfor PARA declar_asig expresion fin_instr actualizacion PARC LLAVEA instrucciones LLAVEC'''
     t[0] = For(t[3],t[4],t[6],t[9],t.lineno(1), find_column(input, t.slice[1]))
 
 def p_declaracion_asig(t):
@@ -447,8 +447,8 @@ def p_parametro(t):
     t[0] = {'tipo':t[1],'identificador':t[2]}
 
 def p_parametro_Arr(t):
-    '''parametro : tipo ID CORA CORC'''
-    t[0] = {'tipo':t[1],'identificador':t[2]}
+    '''parametro : tipo lista_Dim ID '''
+    t[0] = {'tipo':t[1],'identificador':t[3]}
 
 #_________________________________________RETURN _______________________________________
 def p_retorno(t):
