@@ -1,0 +1,259 @@
+''' 
+------------------------------
+Jose Castro Sincu
+201504115
+VACACIONES DE JUNIO 2020
+-------------------------------
+'''
+
+'init            : instrucciones'
+    
+'instrucciones    : instrucciones instruccion'
+
+'instrucciones    : instruccion'
+
+'''instruccion      : imprimir_instr
+                        | declaracion
+                        | declaracion_sinAsig
+                        | asignacion
+                        | if
+                        | break 
+                        | while
+                        | tipo_incremento 
+                        | for
+                        | switch 
+                        | continue
+                        | main
+                        | funcion 
+                        | retorno
+                        | llamada
+                        | declaracion_arreglo
+                        | declaracion_arreglo2
+                        | modificar_arreglo'''
+    
+    'instruccion        : error errores'
+    
+    '''errores : PUNTOCOMA
+                | LLAVEC'''
+   
+
+
+    ''' main : Rmain PARA PARC LLAVEA instrucciones  LLAVEC'''
+    
+    'imprimir_instr : Rprint PARA expresion PARC fin_instr'
+   
+  'declaracion     : tipo ID IGUAL expresion fin_instr'
+    
+
+    '''tipo : Rint
+            | Rdouble
+            | Rstring
+            | Rboolean
+            | Rchar 
+            | Rvar '''
+
+
+    ''' declaracion_sinAsig : tipo ID fin_instr '''
+    
+  ''' asignacion : ID IGUAL  expresion fin_instr'''
+
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC'
+    
+
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC Relse LLAVEA instrucciones LLAVEC'
+    
+    'if     : Rif PARA expresion PARC LLAVEA instrucciones LLAVEC Relse if'
+    
+
+
+    'break : Rbreak fin_instr'
+    
+
+    ''' while : Rwhile PARA expresion PARC LLAVEA instrucciones LLAVEC '''
+    
+
+
+    ''' tipo_incremento : ID MASMAS fin_instr
+                        | ID MENOSMENOS fin_instr '''
+
+    ''' for : Rfor PARA declar_asig expresion fin_instr actualizacion PARC LLAVEA instrucciones LLAVEC'''
+   
+    ''' declar_asig : declaracion
+                    | asignacion '''
+
+    '''actualizacion : asignacion
+                    |  tipo_incremento'''
+    
+
+    ''' switch : Rswitch PARA expresion PARC LLAVEA listaCaso LLAVEC '''
+    
+
+
+    ''' switch : Rswitch PARA expresion PARC LLAVEA listaCaso Rdefault DOSPUNTO instrucciones LLAVEC '''
+    
+
+
+    ''' switch : Rswitch PARA expresion PARC LLAVEA Rdefault DOSPUNTO instrucciones LLAVEC '''
+    
+
+
+    ''' listaCaso : listaCaso casos'''
+    
+
+
+    ''' listaCaso : casos '''
+    
+
+
+
+    '''casos : Rcase expresion DOSPUNTO instrucciones'''
+    
+
+    '''continue : Rcontinue fin_instr'''
+    
+
+    ''' fin_instr : PUNTOCOMA
+                    | '''
+    
+
+
+
+    ''' funcion : Rfunc ID PARA parametros PARC LLAVEA instrucciones LLAVEC '''
+    
+    '''funcion : Rfunc ID PARA PARC LLAVEA instrucciones LLAVEC'''
+    
+
+
+    '''parametros : parametros COMA parametro'''
+   
+
+
+    '''parametros : parametro'''
+    
+
+
+    '''parametro : tipo ID'''
+    
+
+
+    '''parametro : tipo lista_Dim ID '''
+    
+
+    ''' retorno : Rreturn expresion fin_instr '''
+    
+
+    ''' llamada : ID PARA parametros_llamada PARC fin_instr '''
+    
+
+
+    ''' llamada : ID PARA PARC fin_instr'''
+    
+
+
+    '''parametros_llamada : parametros_llamada COMA parametro_llam'''
+   
+
+    '''parametros_llamada : parametro_llam'''
+   
+
+
+    '''parametro_llam : expresion'''
+    
+
+
+    '''declaracion_arreglo : tipo lista_Dim ID IGUAL Rnew tipo lista_expresiones fin_instr'''
+   
+
+
+    'lista_Dim     : lista_Dim CORA CORC'
+    
+    
+
+    'lista_Dim    : CORA CORC'
+    
+
+
+    'lista_expresiones     : lista_expresiones CORA expresion CORC'
+    
+    
+
+    'lista_expresiones    : CORA expresion CORC'
+    
+
+
+    '''declaracion_arreglo2 : tipo lista_Dim ID IGUAL LLAVEA tipo_lista LLAVEC fin_instr'''
+    
+    '''declaracion_arreglo2 : tipo lista_Dim ID IGUAL ID'''
+    
+    '''tipo_lista : d1'''
+    
+    '''tipo_lista : d2'''
+   
+    '''tipo_lista : d3'''
+    
+    '''d1 : d1 COMA expresion'''
+    
+    '''d1 : expresion'''
+
+    '''d2 : d2 COMA LLAVEA d1 LLAVEC'''
+    
+    '''d2 : LLAVEA d1 LLAVEC'''
+    t[0] = [t[2]]
+
+
+    '''d3 : d3 COMA LLAVEA d2 LLAVEC'''
+   
+    '''d3 : LLAVEA d2 LLAVEC'''
+    
+    '''modificar_arreglo :  ID lista_expresiones IGUAL expresion fin_instr'''
+    
+    '''
+    expresion : expresion MAS expresion
+            | expresion MENOS expresion
+            | expresion POR expresion
+            | expresion DIV expresion
+            | expresion POT expresion
+            | expresion MOD expresion
+            | expresion MENORIGUAL expresion
+            | expresion MENOR expresion
+            | expresion MAYORIGUAL expresion
+            | expresion MAYOR expresion
+            | expresion IGUALIGUAL expresion
+            | expresion DISTINTO expresion
+            | expresion AND expresion
+            | expresion OR expresion
+    '''
+    
+    '''
+    expresion : MENOS expresion %prec UMENOS 
+            | NOT expresion %prec UNOT 
+    '''
+    
+    ''' expresion : PARA expresion PARC '''
+    
+    '''expresion : ENTERO'''
+    
+    '''expresion : DECIMAL'''
+    
+    '''expresion : CADENA'''
+    
+    '''expresion : Rtrue'''
+    
+    '''expresion : Rfalse'''
+    
+    '''expresion : CARACTER'''
+    
+    '''expresion : ID '''
+    
+    '''expresion : Rnull '''
+    
+    ''' expresion : llamada'''
+   
+    ''' expresion : PARA tipo PARC expresion '''
+    
+    ''' expresion : Rread PARA PARC'''
+    
+    '''expresion : ID lista_expresiones'''
+    
+
+
