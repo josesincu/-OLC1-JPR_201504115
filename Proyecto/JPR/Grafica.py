@@ -210,7 +210,7 @@ def ejecutar_entrada():
         
         if isinstance(instruccion, Funcion):
             ast.addFuncion(instruccion)     # GUARDAR LA FUNCION EN "MEMORIA" (EN EL ARBOL)
-            #ast.addSim_Tabla((instruccion.nombre,"Funcion","----","Global",'----',instruccion.fila,instruccion.columna))
+            ast.addSim_Tabla((instruccion.nombre,"Funcion","----","Global",'----',instruccion.fila,instruccion.columna))
         if isinstance(instruccion, Declaracion) or isinstance(instruccion, Asignacion) or isinstance(instruccion,Declaracion_sinAsignacion) or isinstance(instruccion,DeclaracionArreglo) or isinstance(instruccion,ModificarArreglo) or isinstance(instruccion,AccesoArreglo) or isinstance(instruccion,DeclaracionArreglo2):
             #if isinstance(instruccion,Declaracion):
             #   ast.addSim_Tabla((instruccion.identificador,"Variable","----","Global",instruccion.expresion,instruccion.fila,instruccion.columna))

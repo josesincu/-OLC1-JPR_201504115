@@ -18,6 +18,7 @@ class Imprimir(Instruccion):
             return Excepcion("Semantico", "No se puede imprimir un arreglo completo", self.fila, self.columna)
         
         jconsola.insert('insert',">>"+str(value)+"\n")
+        jconsola.see("end")
         #tree.updateConsola(value)
     
     def getNodo(self):

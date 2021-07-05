@@ -21,7 +21,7 @@ class Llamada(Instruccion):
         result = tree.getFuncion(self.nombre) ## OBTENER LA FUNCION
         if result == None: # NO SE ENCONTRO LA FUNCION
             return Excepcion("Semantico", "NO SE ENCONTRO LA FUNCION: " + self.nombre, self.fila, self.columna)
-        nuevaTabla = TablaSimbolos(tree.getTSGlobal(),"Funcion")
+        nuevaTabla = TablaSimbolos(tree.getTSGlobal(),"FUNCION "+result.nombre.upper())
         # OBTENER PARAMETROS
         if len(result.parametros) == len(self.parametros): #LA CANTIDAD DE PARAMETROS ES LA ADECUADA
             contador=0
